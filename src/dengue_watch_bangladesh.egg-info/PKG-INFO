@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: dengue-watch-bangladesh
+Version: 1.0.0
+Summary: Ward-level dengue forecasting and interactive dashboard for Bangladesh
+Requires-Python: >=3.10
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: scikit-learn==1.7.2
+Requires-Dist: joblib>=1.3
