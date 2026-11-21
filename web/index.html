@@ -8,13 +8,14 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/dashboard.css">
   <link rel="stylesheet" href="assets/css/riskmap.css">
+  <link rel="stylesheet" href="assets/css/accuracy.css">
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
       <a class="brand" href="#top"><img class="brand-logo" src="assets/img/logo.png" alt="Dengue Watch mosquito logo"><span>DENGUE<span class="brand-light">WATCH</span><small>MODEL-POWERED EARLY WARNING</small></span></a>
       <div class="side-label">WORKSPACE</div>
-      <nav><a class="nav-link active" href="#home" data-nav="home">⚠ <span>Risk prediction</span></a><a class="nav-link" href="#map" data-nav="map">▦ <span>Risk map</span></a><a class="nav-link" href="#forecast" data-nav="forecast">⌁ <span>Forecasts</span></a><a class="nav-link" href="#wards" data-nav="wards">⌖ <span>Ward explorer</span></a><a class="nav-link" href="#alerts" data-nav="alerts">🔔 <span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions">✓ <span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask">✳ <span>Ask Dengue Watch</span></a><a class="nav-link" href="#method" data-nav="method">◉ <span>Model & data</span></a></nav>
+      <nav><a class="nav-link active" href="#home" data-nav="home">⚠ <span>Risk prediction</span></a><a class="nav-link" href="#map" data-nav="map">▦ <span>Risk map</span></a><a class="nav-link" href="#forecast" data-nav="forecast">⌁ <span>Forecasts</span></a><a class="nav-link" href="#wards" data-nav="wards">⌖ <span>Ward explorer</span></a><a class="nav-link" href="#alerts" data-nav="alerts">🔔 <span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions">✓ <span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask">✳ <span>Ask Dengue Watch</span></a><a class="nav-link" href="#accuracy" data-nav="accuracy">▲ <span>Model accuracy</span></a><a class="nav-link" href="#method" data-nav="method">◉ <span>Model & data</span></a></nav>
       <div class="sidebar-bottom"><div class="api-state"><i id="apiDot"></i><div><b id="apiStatus">Connecting to model API</b><small id="apiSub">Checking backend…</small></div></div><p>Forecast estimates are research outputs, not official public-health alerts.</p></div>
     </aside>
     <main id="top">
@@ -71,6 +72,20 @@
           <p class="rm-foot" id="rmFoot"></p>
         </section>
         <div class="rm-tip" id="rmTip" role="tooltip"></div>
+        <section class="panel acc-panel" id="accPage" data-page="accuracy">
+          <div class="panel-head"><div><span class="eyebrow">MODEL ACCURACY</span><h3>Precision, Recall &amp; F1 for outbreak warnings</h3><p class="muted" id="accDef">Loading…</p></div><span class="source-tag">HELD-OUT TEST DATA</span></div>
+          <div class="acc-controls">
+            <div><label for="accH">FORECAST HORIZON</label><select id="accH"></select></div>
+            <div><label>ALARM THRESHOLD: <b id="accTVal">10</b> predicted cases</label><input type="range" id="accT" min="3" max="12" step="1" value="10"></div>
+          </div>
+          <div class="kpi-grid" id="accKpi"></div>
+          <div class="acc-grid">
+            <div><h4 class="acc-h">Across all horizons (at this threshold)</h4><div id="accChart" class="chart-area"></div><div class="chart-foot"><span><i class="legend-dot teal"></i> Precision &nbsp; <i class="legend-dot blue"></i> Recall &nbsp; <i class="legend-dot" style="background:#d38a2c"></i> F1</span><span>Weeks ahead →</span></div></div>
+            <div><h4 class="acc-h">Confusion matrix</h4><div id="accCm" class="acc-cm"></div></div>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>HORIZON</th><th>PRECISION</th><th>RECALL</th><th>F1</th><th>TP</th><th>FP</th><th>FN</th><th>TN</th></tr></thead><tbody id="accRows"></tbody></table></div>
+          <p class="small-note">Precision = share of alarms that were real outbreaks. Recall = share of real outbreaks that were caught. F1 = their harmonic mean. Lower the threshold to catch more outbreaks (higher recall, lower precision).</p>
+        </section>
         <section class="panel page-panel" id="alertsPage" data-page="alerts">
           <div class="panel-head"><div><span class="eyebrow">MODEL-GENERATED ALERTS</span><h3>Alerts from the current prediction</h3><p class="muted" id="alertsSub">Built from the city, date and window chosen on the Risk prediction page.</p></div><button class="btn btn-outline" id="markAllRead">Mark all read</button></div>
           <div id="alertList" class="alert-list"></div>
@@ -93,4 +108,6 @@
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="assets/js/dashboard.js"></script>
   <script src="assets/js/riskmap.js"></script>
+  <script src="assets/js/accuracy-data.js"></script>
+  <script src="assets/js/accuracy.js"></script>
 </body></html>

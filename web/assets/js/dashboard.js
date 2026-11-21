@@ -95,7 +95,7 @@ async function initRisk(){
 document.addEventListener('DOMContentLoaded',initRisk);
 
 /* ================= page router ================= */
-const PAGES={home:'Risk prediction',map:'Risk map',alerts:'Alerts',actions:'Action plan',ask:'Ask Dengue Watch',forecast:'Forecasts & history',wards:'Ward explorer',method:'Model & data'};
+const PAGES={home:'Risk prediction',map:'Risk map',alerts:'Alerts',actions:'Action plan',ask:'Ask Dengue Watch',forecast:'Forecasts & history',wards:'Ward explorer',method:'Model & data',accuracy:'Model accuracy'};
 function showPage(){
   let pg=(location.hash||'#home').slice(1); if(!PAGES[pg]) pg='home';
   document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('hide',el.dataset.page!=='all'&&el.dataset.page!==pg));
