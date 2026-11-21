@@ -5,16 +5,18 @@ Ward-level dengue forecasting for 60 wards in 5 Bangladesh cities (Chattogram, D
 ## 1. System data flow
 
 ```mermaid
+```mermaid
 flowchart TD
-    A[data/bangladesh_dengue_large_dataset.csv<br/>weather, ward profile, cases] --> B[features.py<br/>lags, rolling stats, season<br/>shifted by horizon h]
-    B --> C[pipeline.py<br/>train 5 models x 13 horizons]
-    C --> D[evaluation.py<br/>time-series CV, test metrics, importance]
-    D --> E[(artifacts/)<br/>models/*.joblib<br/>results.json<br/>predictions/*.csv]
-    E --> F[app.py<br/>Python HTTP API]
+    A["data/bangladesh_dengue_large_dataset.csv<br/>Weather, ward profile, cases"] --> B["features.py<br/>Lags, rolling statistics, seasonality<br/>Shifted by forecast horizon h"]
+    B --> C["pipeline.py<br/>Train 5 models across 13 horizons"]
+    C --> D["evaluation.py<br/>Time-series CV, test metrics, importance"]
+    D --> E["Saved artifacts<br/>models/*.joblib<br/>results.json<br/>predictions/*.csv"]
+    E --> F["app.py<br/>Python HTTP API"]
     A --> F
-    F -->|/api/health, /dashboard, /risk, /map| G[web/ dashboard<br/>risk, map, alerts, accuracy]
-    E -.->|precision, recall, F1| H[web/classification_metrics.json]
+    F -->|API routes| G["web dashboard<br/>Risk, map, alerts, accuracy"]
+    E -.->|Precision, recall, F1| H["web/classification_metrics.json"]
     H --> G
+```
 ```
 
 ### Model flow
