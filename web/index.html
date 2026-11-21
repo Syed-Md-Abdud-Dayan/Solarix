@@ -7,13 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="stylesheet" href="assets/css/riskmap.css">
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
       <a class="brand" href="#top"><img class="brand-logo" src="assets/img/logo.png" alt="Dengue Watch mosquito logo"><span>DENGUE<span class="brand-light">WATCH</span><small>MODEL-POWERED EARLY WARNING</small></span></a>
       <div class="side-label">WORKSPACE</div>
-      <nav><a class="nav-link active" href="#home" data-nav="home">⚠ <span>Risk prediction</span></a><a class="nav-link" href="#forecast" data-nav="forecast">⌁ <span>Forecasts</span></a><a class="nav-link" href="#wards" data-nav="wards">⌖ <span>Ward explorer</span></a><a class="nav-link" href="#alerts" data-nav="alerts">🔔 <span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions">✓ <span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask">✳ <span>Ask Dengue Watch</span></a><a class="nav-link" href="#method" data-nav="method">◉ <span>Model & data</span></a></nav>
+      <nav><a class="nav-link active" href="#home" data-nav="home">⚠ <span>Risk prediction</span></a><a class="nav-link" href="#map" data-nav="map">▦ <span>Risk map</span></a><a class="nav-link" href="#forecast" data-nav="forecast">⌁ <span>Forecasts</span></a><a class="nav-link" href="#wards" data-nav="wards">⌖ <span>Ward explorer</span></a><a class="nav-link" href="#alerts" data-nav="alerts">🔔 <span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions">✓ <span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask">✳ <span>Ask Dengue Watch</span></a><a class="nav-link" href="#method" data-nav="method">◉ <span>Model & data</span></a></nav>
       <div class="sidebar-bottom"><div class="api-state"><i id="apiDot"></i><div><b id="apiStatus">Connecting to model API</b><small id="apiSub">Checking backend…</small></div></div><p>Forecast estimates are research outputs, not official public-health alerts.</p></div>
     </aside>
     <main id="top">
@@ -42,6 +43,34 @@
         <section class="panel-grid second-grid" data-page="forecast"><article class="panel"><div class="panel-head"><div><span class="eyebrow">OBSERVED HISTORY</span><h3>Reported dengue cases</h3><p class="muted">Weekly totals in the supplied dataset</p></div><span class="unit-tag">ACTUAL DATA</span></div><div id="historyChart" class="chart-area short-chart"><div class="loading">Loading observations…</div></div><div class="chart-foot"><span><i class="legend-dot blue"></i> Reported cases</span><span id="historyRange"></span></div></article></section><section class="panel-grid second-grid" data-page="method"><article class="panel model-panel" id="method"><div class="panel-head"><div><span class="eyebrow">MODEL & DATA</span><h3>What powers this view</h3></div><span class="source-tag">VERIFIED SOURCE</span></div><div class="model-details" id="modelDetails"><div class="loading">Reading model metadata…</div></div></article></section>
         <section class="panel ward-panel" id="wards" data-page="wards"><div class="panel-head ward-head"><div><span class="eyebrow">WARD-LEVEL OUTPUT</span><h3>Ward forecast explorer</h3><p class="muted" id="wardCaption">Ranked by model-predicted case count</p></div><div class="ward-tools"><input id="wardSearch" type="search" placeholder="Search ward ID…" aria-label="Search ward"><button class="btn btn-outline" id="exportBtn">↓ Export CSV</button></div></div><div class="table-wrap"><table><thead><tr><th>RANK</th><th>WARD ID</th><th>MODEL ESTIMATE</th><th>LAST REPORTED</th><th>RELATIVE PRIORITY</th><th>RAINFALL (MM)</th><th>WATER-LOGGING INDEX</th></tr></thead><tbody id="wardRows"><tr><td colspan="7" class="loading">Loading ward predictions…</td></tr></tbody></table></div><div class="table-bottom"><span id="wardCount"></span><span>Priority is relative within the selected city; it is not a clinical risk score.</span></div></section>
         
+        <section class="panel rm-panel" id="mapPage" data-page="map">
+          <div class="panel-head"><div><span class="eyebrow">TILE MAP · 60 WARDS</span><h3>Risk across the district</h3><p class="muted" id="rmCaption">Click a tile</p></div><span class="source-tag">TRAINED MODEL</span></div>
+          <div class="rm-stats" id="rmStats">
+            <div class="rm-stat" style="--rk:#ff4d6a"><small>CRITICAL WARDS</small><b id="rmS1">0</b><span id="rmS1s">of 60</span></div>
+            <div class="rm-stat" style="--rk:#ff9640"><small>HIGH OR CRITICAL</small><b><span id="rmS2">0</span>%</b><span>of all wards</span></div>
+            <div class="rm-stat" style="--rk:#38d6ff"><small>EXPECTED CASES / WEEK</small><b id="rmS3">0</b><span>whole district</span></div>
+            <button class="rm-stat rm-hotbtn" style="--rk:#ffd447" id="rmS4b"><small>HOTTEST WARD</small><b id="rmS4">–</b><span id="rmS4s"></span></button>
+          </div>
+          <div class="rm-bar">
+            <div><label>VIEW</label><div class="seg" id="rmView"><button data-v="orbit" class="on">Orbit map</button><button data-v="tiles">Tiles</button></div></div>
+            <div style="min-width:260px;flex:1"><label>FORECAST WINDOW: <b id="rmHLabel">+3 weeks</b></label><div class="rm-play"><button class="btn btn-primary" id="rmPlay" type="button">▶ Play forecast</button><input type="range" id="rmHorizon" min="1" max="12" step="1" value="3"></div></div>
+            <div><label for="rmDate">FORECAST FROM (WEEK)</label><input type="date" id="rmDate"></div>
+            <div style="min-width:200px"><label>RAINFALL SCENARIO: <b id="rmRainVal">×1.0 (as recorded)</b></label><input type="range" id="rmRain" min="0.4" max="2" step="0.1" value="1" style="width:100%;accent-color:var(--teal)"></div>
+          </div>
+          <div class="rm-dist" id="rmDist"></div>
+          <div class="rm-legend" id="rmLegend"></div>
+          <div class="rm-layout">
+            <div class="rm-stage" id="rmStageWrap">
+              <div class="rm-hud"><div><small>FORECAST</small><b id="rmHudWk">+3 WK</b><span id="rmHudDate"></span></div><svg id="rmTrend" viewBox="0 0 150 44" aria-label="District expected cases by forecast week"></svg></div>
+              <div class="rm-tools"><button id="rmZoomIn" title="Zoom in" aria-label="Zoom in">+</button><button id="rmZoomOut" title="Zoom out" aria-label="Zoom out">−</button><button id="rmReset" title="Reset view" aria-label="Reset view">⟲</button><button id="rmFull" title="Full screen" aria-label="Full screen">⛶</button></div>
+              <div id="rmStage"><div class="loading" style="padding:120px 0;text-align:center;color:#9fc6c9">Open this page to load the map…</div></div>
+              <div class="rm-busy" id="rmBusy">Running predictions…</div>
+            </div>
+            <aside class="rm-side" id="rmSide" aria-live="polite"></aside>
+          </div>
+          <p class="rm-foot" id="rmFoot"></p>
+        </section>
+        <div class="rm-tip" id="rmTip" role="tooltip"></div>
         <section class="panel page-panel" id="alertsPage" data-page="alerts">
           <div class="panel-head"><div><span class="eyebrow">MODEL-GENERATED ALERTS</span><h3>Alerts from the current prediction</h3><p class="muted" id="alertsSub">Built from the city, date and window chosen on the Risk prediction page.</p></div><button class="btn btn-outline" id="markAllRead">Mark all read</button></div>
           <div id="alertList" class="alert-list"></div>
@@ -63,4 +92,5 @@
   </div>
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="assets/js/dashboard.js"></script>
+  <script src="assets/js/riskmap.js"></script>
 </body></html>

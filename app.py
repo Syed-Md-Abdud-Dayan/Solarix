@@ -339,6 +339,23 @@ def risk_payload(params):
     }
 
 
+def map_payload(params):
+    """All wards of every city in one response, for the district risk map."""
+    wards, cities, meta = [], [], {}
+    for c in CITIES:
+        p = dict(params); p["city"] = [c]
+        d = risk_payload(p)
+        meta = d
+        cities.append({"city": c, "risk": d["city_risk"], "counts": d["counts"], "expected_cases": d["city_expected_cases"], "wards": len(d["wards"])})
+        for w in d["wards"]:
+            w["city"] = c
+            w["ward_no"] = int(w["ward_id"].rsplit("_", 1)[-1])
+            wards.append(w)
+    return {"origin_date": meta["origin_date"], "target_date": meta["target_date"], "horizon": meta["horizon"],
+            "rain_mult": meta["rain_mult"], "date_range": meta["date_range"], "backtest": meta["backtest"],
+            "risk_note": meta["risk_note"], "model": meta["model"], "cities": cities, "wards": wards}
+
+
 class Handler(BaseHTTPRequestHandler):
     def _send(self, status, body, content_type="application/json; charset=utf-8"):
         raw = body if isinstance(body, bytes) else (json.dumps(body, ensure_ascii=False).encode("utf-8") if content_type.startswith("application/json") else str(body).encode("utf-8"))
@@ -354,6 +371,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if parsed.path == "/api/health":
                 return self._send(200, health_payload())
+            if parsed.path == "/api/map":
+                return self._send(200, map_payload(parse_qs(parsed.query)))
             if parsed.path == "/api/risk":
                 return self._send(200, risk_payload(parse_qs(parsed.query)))
             if parsed.path == "/api/dashboard":
