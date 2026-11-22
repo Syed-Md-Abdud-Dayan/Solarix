@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<title>Dengue Watch | Future forecast (2026 and beyond)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#071b2c;--ink:#132b3b;--muted:#718392;--line:#e5edf0;--bg:#f4f7f8;--teal:#0c9b83;--blue:#2f78b8;--amber:#e0a02d;--red:#c0392b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 'DM Sans',system-ui,sans-serif}
+header{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{height:34px}header b{font:800 16px Manrope;letter-spacing:.06em}header a{margin-left:auto;color:#9fd9cc;text-decoration:none;font-weight:600}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+h1{font:800 26px Manrope;margin:6px 0 4px}h2{font:700 15px Manrope;margin:0 0 4px}.muted{color:var(--muted);font-size:12px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:16px}
+.warn{background:#fff8e3;border:1px solid #efd98f;border-left:5px solid var(--amber);border-radius:10px;padding:12px 16px;font-size:12.5px;margin-top:14px}
+.warn>b{display:block;margin-bottom:2px}
+.ctl{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr 1fr auto;gap:12px;align-items:end}
+label{display:block;font-size:9px;font-weight:700;letter-spacing:.13em;color:#8395a0;margin-bottom:6px;text-transform:uppercase}
+select,input[type=date]{width:100%;height:40px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font:600 13px 'DM Sans';background:#fff;color:var(--ink)}
+button{font:700 13px 'DM Sans';cursor:pointer}.go{height:40px;padding:0 20px;border:0;border-radius:9px;background:var(--teal);color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;font-size:11px;color:var(--muted)}
+.chips button{border:1px solid var(--line);background:#f8fbfb;border-radius:20px;padding:6px 12px;font-size:11px;color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;border-top:4px solid var(--teal)}
+.card small{font-size:9px;letter-spacing:.14em;font-weight:700;color:#8395a0}.card b{display:block;font:800 28px Manrope;margin:4px 0 0}.card span{font-size:12px;color:var(--muted)}
+.legend{display:flex;gap:18px;font-size:11px;color:var(--muted);margin:6px 0 2px;flex-wrap:wrap}.legend i{display:inline-block;width:14px;height:8px;border-radius:2px;margin-right:6px;vertical-align:middle}
+#chartWrap{position:relative}svg{width:100%;height:auto;display:block}
+#tip{position:absolute;pointer-events:none;background:var(--navy);color:#fff;padding:8px 10px;border-radius:8px;font-size:11px;display:none;white-space:nowrap;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:12.5px}th{font-size:9px;letter-spacing:.12em;text-align:left;color:#8395a0;padding:8px 6px;border-bottom:1px solid var(--line)}
+td{padding:8px 6px;border-bottom:1px solid #f0f4f5}td.n,th.n{text-align:right}
+.bar{height:8px;border-radius:4px;background:#bfe3da;position:relative;min-width:2px}
+.chip{font-size:9px;font-weight:800;letter-spacing:.08em;padding:4px 9px;border-radius:20px}
+.rk-Critical{background:#fdeceb;color:#c0392b}.rk-High{background:#fff1e6;color:#e0752d}.rk-Medium{background:#fff8e3;color:#a67c12}.rk-Low{background:#e8f6f2;color:#2e9a7f}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.scroll{max-height:420px;overflow:auto}
+.dl{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 12px;font-size:12px;margin-right:8px}
+.err{background:#fff1ef;border:1px solid #f3cfca;color:#a33;padding:14px;border-radius:10px;margin-top:16px}
+@media(max-width:980px){.ctl{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><img src="assets/img/logo.png" alt=""><b>DENGUE WATCH</b><a href="index.html">← Back to dashboard</a></header>
+<main>
+  <h1>Future forecast: 2026, 2027 and beyond</h1>
+  <p class="muted" style="margin:0">Predicts weeks that are <b>not in your data</b> (after <span id="lastWeek">2025-12-29</span>), up to 2030. Pick any city and date range.</p>
+
+  <div class="warn"><b>How to read this honestly</b>
+    <span id="honest">Future weather is unknown, so this shows a <b>typical season with a plausible range</b>, not which exact week an outbreak will hit.</span>
+  </div>
+
+  <section class="panel">
+    <div class="ctl">
+      <div><label for="city">City</label><select id="city"></select></div>
+      <div><label for="start">From</label><input type="date" id="start" value="2026-01-05" min="2026-01-05" max="2030-12-31"></div>
+      <div><label for="end">To</label><input type="date" id="end" value="2027-12-27" min="2026-01-12" max="2030-12-31"></div>
+      <div><label for="rain">Rainfall scenario</label><select id="rain"><option value="1">Typical (average of 10 past years)</option><option value="1.3">Wetter year (+30% rain)</option><option value="0.7">Drier year (-30% rain)</option></select></div>
+      <div><label for="temp">Temperature</label><select id="temp"><option value="0">As in past years</option><option value="1">+1 °C warmer</option><option value="2">+2 °C warmer</option></select></div>
+      <button class="go" id="go">Forecast →</button>
+    </div>
+    <div class="chips"><span>Quick:</span>
+      <button data-s="2026-01-05" data-e="2026-12-28">Year 2026</button><button data-s="2027-01-04" data-e="2027-12-27">Year 2027</button>
+      <button data-s="2026-01-05" data-e="2028-12-25">2026 – 2028</button><button data-s="2026-06-01" data-e="2026-10-26">Monsoon 2026</button>
+    </div>
+  </section>
+
+  <div id="out"><div class="panel muted">Loading forecast…</div></div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(Number(n)).toLocaleString('en-US');
+let DATA = null;
+
+async function api(path){ const r = await fetch(path); const j = await r.json(); if(!r.ok) throw new Error(j.error || r.statusText); return j; }
+
+async function init(){
+  try{
+    const h = await api('/api/health');
+    $('lastWeek').textContent = h.latest_observation;
+    $('city').innerHTML = '<option value="All">All cities</option>' + h.cities.map(c => `<option${c==='Dhaka North'?' selected':''}>${c}</option>`).join('');
+    run();
+  }catch(e){ $('out').innerHTML = `<div class="err">Cannot reach the model API. Start it with <code>python app.py</code> and open http://127.0.0.1:5000/future.html<br>${e.message}</div>`; }
+}
+
+async function run(){
+  $('out').innerHTML = '<div class="panel muted">Running 10 weather scenarios through the trained model…</div>';
+  const q = new URLSearchParams({city:$('city').value,start:$('start').value,end:$('end').value,rain_mult:$('rain').value,temp_shift:$('temp').value});
+  try{ DATA = await api('/api/future?'+q); render(DATA); }
+  catch(e){ $('out').innerHTML = `<div class="err">${e.message}</div>`; }
+}
+
+function render(d){
+  const a = d.accuracy_summary;
+  if(a) $('honest').innerHTML = `Future weather is unknown, so this is a <b>typical season with a plausible range</b>, not a call on which exact week an outbreak hits. Tested on unseen years 2023-25: ward-week R² <b>${a.ward_week_R2}</b> (city-week ${a.city_week_R2}); a plain seasonal average scores ${a.seasonal_average_baseline_R2}. Yearly totals were off by -16% to +26%. The model cannot know about new outbreaks, control programmes, or climate trends.`;
+  const scen = ($('rain').value!=='1'||$('temp').value!=='0') ? ' (what-if scenario)' : '';
+  const cards = d.yearly.map(y => `<div class="card"><small>${y.year} TOTAL CASES${scen}</small><b>${fmt(y.expected)}</b><span>likely range ${fmt(y.p10)} – ${fmt(y.p90)} (80%)</span></div>`).join('');
+  const pk = d.weekly.reduce((m,w)=>w.expected>m.expected?w:m, d.weekly[0]);
+  const top = d.wards[0];
+  $('out').innerHTML = `
+  <section class="panel"><div class="cards">${cards}
+    <div class="card" style="border-top-color:var(--amber)"><small>EXPECTED PEAK WEEK</small><b>${pk.date}</b><span>~${fmt(pk.expected)} cases (${fmt(pk.p10)} – ${fmt(pk.p90)})</span></div>
+    <div class="card" style="border-top-color:var(--red)"><small>HIGHEST-BURDEN WARD</small><b style="font-size:20px;margin-top:10px">${top.ward_id}</b><span>${fmt(top.expected_total)} expected cases in this window</span></div></div></section>
+  <section class="panel"><h2>Weekly cases — ${d.city === 'All' ? 'all cities' : d.city}</h2>
+    <div class="legend"><span><i style="background:#2f78b8"></i>Expected cases</span><span><i style="background:#cfe3f4"></i>80% range (weather + random noise)</span><span><i style="background:#0c9b83;border-radius:50%;width:8px"></i>Near-term model (first 12 weeks, uses latest real data)</span></div>
+    <div id="chartWrap"><svg id="chart" viewBox="0 0 1100 330" preserveAspectRatio="xMidYMid meet"></svg><div id="tip"></div></div></section>
+  <div class="two">
+    <section class="panel"><h2>By month</h2><div class="scroll"><table><thead><tr><th>MONTH</th><th class="n">EXPECTED</th><th class="n">RANGE</th><th style="width:30%"></th></tr></thead><tbody>${monthRows(d.monthly)}</tbody></table></div></section>
+    <section class="panel"><h2>Ward ranking (${d.wards.length} wards)</h2><p class="muted" style="margin:0 0 6px">Risk = expected cases in the ward's peak week: Low &lt;2, Medium 2-5, High 5-9, Critical ≥9.</p><div class="scroll"><table><thead><tr><th>WARD</th><th class="n">EXPECTED</th><th>PEAK WEEK</th><th>RISK</th></tr></thead><tbody>${d.wards.map(w=>`<tr><td>${w.ward_id}</td><td class="n">${fmt(w.expected_total)}</td><td>${w.peak_week}</td><td><span class="chip rk-${w.peak_risk}">${w.peak_risk.toUpperCase()}</span></td></tr>`).join('')}</tbody></table></div></section>
+  </div>
+  <section class="panel"><h2>How accurate was this method on years it had never seen?</h2><p class="muted" style="margin:0 0 8px">${d.backtest ? d.backtest.method : ''}</p>${btTable(d.backtest)}
+    <p style="margin:12px 0 0"><button class="dl" id="dlWeekly">⬇ Weekly CSV</button><button class="dl" id="dlWards">⬇ Ward CSV</button></p></section>`;
+  chart(d);
+  $('dlWeekly').onclick = () => csv('weekly_forecast.csv', ['date','expected','p10','p90','near_term_model'], d.weekly);
+  $('dlWards').onclick = () => csv('ward_forecast.csv', ['ward_id','city','expected_total','peak_week','peak_expected_per_week','peak_risk'], d.wards);
+}
+
+function monthRows(m){ const mx = Math.max(...m.map(x=>x.p90),1);
+  return m.map(x=>`<tr><td>${x.month}</td><td class="n">${fmt(x.expected)}</td><td class="n">${fmt(x.p10)} – ${fmt(x.p90)}</td><td><div class="bar" style="width:${100*x.expected/mx}%"></div></td></tr>`).join(''); }
+
+function btTable(b){ if(!b) return '<p class="muted">Run <code>python scripts/backtest_future.py</code> to generate accuracy results.</p>';
+  const r = b.per_year;
+  return `<table><thead><tr><th>TEST YEAR</th><th class="n">R² (ward-week)</th><th class="n">R² (city-week)</th><th class="n">R² if weather were known</th><th class="n">YEAR TOTAL ERROR</th><th class="n">80% BAND COVERAGE</th><th>PEAK WEEK (ACTUAL / PREDICTED)</th></tr></thead><tbody>${
+  r.map(y=>`<tr><td>${y.year}</td><td class="n">${y.R2.toFixed(2)}</td><td class="n">${y.R2_city_week.toFixed(2)}</td><td class="n">${y.R2_if_real_weather_known.toFixed(2)}</td><td class="n">${y.total_error_pct>0?'+':''}${y.total_error_pct.toFixed(0)}%</td><td class="n">${(100*y.band_coverage_city_week_p10_p90).toFixed(0)}%</td><td>${y.peak_week_actual} / ${y.peak_week_predicted}</td></tr>`).join('')}</tbody></table>`; }
+
+function chart(d){
+  const W=1100,H=330,L=54,R=14,T=14,B=34, w=d.weekly, n=w.length;
+  const mx = Math.max(...w.map(p=>p.p90), 1)*1.08, x = i => L + (W-L-R)*i/Math.max(n-1,1), y = v => T + (H-T-B)*(1-v/mx);
+  let s = '';
+  for(let k=0;k<=4;k++){ const v=mx*k/4; s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="#e8eff1"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#718392">${Math.round(v)}</text>`; }
+  let last=''; w.forEach((p,i)=>{ const m=p.date.slice(0,7); if(m!==last && (+m.slice(5)-1)%3===0 || (m!==last && n<30)){ s+=`<text x="${x(i)}" y="${H-12}" font-size="11" fill="#718392" text-anchor="middle">${m}</text>`; } last=m; });
+  s += `<polygon fill="#cfe3f4" opacity=".85" points="${w.map((p,i)=>x(i)+','+y(p.p90)).join(' ')} ${w.map((p,i)=>[x(i),y(p.p10)]).reverse().map(a=>a.join(',')).join(' ')}"/>`;
+  s += `<polyline fill="none" stroke="#2f78b8" stroke-width="2.2" points="${w.map((p,i)=>x(i)+','+y(p.expected)).join(' ')}"/>`;
+  w.forEach((p,i)=>{ if(p.near_term_model!=null) s+=`<circle cx="${x(i)}" cy="${y(p.near_term_model)}" r="3.5" fill="#0c9b83"/>`; });
+  s += `<line id="cur" x1="0" x2="0" y1="${T}" y2="${H-B}" stroke="#132b3b" stroke-dasharray="3 3" opacity="0"/><rect id="hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent"/>`;
+  const svg=$('chart'); svg.innerHTML=s; const tip=$('tip'), cur=svg.querySelector('#cur');
+  svg.querySelector('#hit').onmousemove = ev => {
+    const bb=svg.getBoundingClientRect(), px=(ev.clientX-bb.left)*W/bb.width; const i=Math.max(0,Math.min(n-1,Math.round((px-L)/(W-L-R)*(n-1)))), p=w[i];
+    cur.setAttribute('x1',x(i)); cur.setAttribute('x2',x(i)); cur.setAttribute('opacity',1);
+    tip.innerHTML=`<b>${p.date}</b><br>Expected ${p.expected}<br>80% range ${p.p10} – ${p.p90}`+(p.near_term_model!=null?`<br>Near-term model ${p.near_term_model}`:'');
+    tip.style.display='block'; tip.style.left=Math.min(ev.clientX-bb.left+14, bb.width-170)+'px'; tip.style.top=(ev.clientY-bb.top-10)+'px'; };
+  svg.querySelector('#hit').onmouseleave = () => { tip.style.display='none'; cur.setAttribute('opacity',0); };
+}
+
+function csv(name, cols, rows){
+  const t = [cols.join(',')].concat(rows.map(r => cols.map(c => r[c] ?? '').join(','))).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t],{type:'text/csv'})); a.download = name; a.click();
+}
+
+$('go').onclick = run;
+document.querySelectorAll('.chips button').forEach(b => b.onclick = () => { $('start').value=b.dataset.s; $('end').value=b.dataset.e; run(); });
+init();
+</script>
+</body>
+</html>

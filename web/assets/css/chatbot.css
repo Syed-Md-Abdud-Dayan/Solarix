@@ -1,0 +1,31 @@
+/* Dengue Watch chatbot */
+.chatbot .chat-tools{display:flex;gap:10px;align-items:center}
+.chatbot .chat-tools .seg{width:auto}.chatbot .chat-tools .seg button{height:34px;padding:0 12px;flex:none}
+.chatbot .chat-tools .btn{height:34px;padding:0 14px}
+.chat-emerg{margin:14px 0 6px;padding:10px 14px;border-radius:9px;background:#fff1f0;border:1px solid #f3c6c2;color:#8f2f27;font-size:12px;line-height:1.5}
+.chat-ctx{font-size:11px;color:var(--muted);margin:4px 0 0}.chat-ctx span{display:inline-block;background:#eef5f6;border:1px solid var(--line);border-radius:14px;padding:3px 9px;margin-right:6px}
+.chatbot .chat-log{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-content:start;height:calc(100vh - 470px);min-height:260px;max-height:640px;overflow:auto;padding:10px 4px;scroll-behavior:smooth}
+.chatbot .msg{min-width:0;max-width:min(720px,88%);padding:12px 15px;border-radius:14px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.chatbot .msg.user{justify-self:end;background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.chatbot .msg.bot{background:#f4f8f9;border:1px solid var(--line);border-bottom-left-radius:4px;position:relative}
+.chatbot .msg.bot.caution{background:#fffaf0;border-color:#efdcb4}
+.chatbot .msg.bot.emergency{background:#fff1f0;border:2px solid #e0564b}
+.chatbot .msg h4{margin:0 0 6px;font:700 14px Manrope;color:var(--navy)}.chatbot .msg.emergency h4{color:#b3261e}
+.chatbot .msg p{margin:0 0 6px}.chatbot .msg ul{margin:6px 0;padding-left:20px}.chatbot .msg li{margin:4px 0}
+.chatbot .msg .tbl{overflow-x:auto;margin:8px 0}.chatbot .msg table{font-size:12px;white-space:nowrap;background:#fff;border:1px solid var(--line);border-radius:8px}
+.chatbot .msg thead th{font-size:10px;padding:7px 10px}.chatbot .msg tbody td{padding:7px 10px;font-size:12px}
+.chatbot .msg .note{font-size:11px;color:#66808c;margin:5px 0 0;padding-left:10px;border-left:3px solid #cfe3e8}
+.chatbot .msg .meta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:9px;font-size:10px;color:#8a9aa4}
+.chatbot .msg .meta button{border:0;background:none;color:var(--teal);font:700 10px 'DM Sans';cursor:pointer;padding:2px 4px}
+.chatbot .risk-pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.chatbot .r-Critical,.chatbot .r-সংকটজনক{background:#ffe3e6;color:#b3203a}.chatbot .r-High,.chatbot .r-উচ্চ{background:#ffe9d6;color:#a8530b}
+.chatbot .r-Medium,.chatbot .r-মাঝারি{background:#fff3cd;color:#876400}.chatbot .r-Low,.chatbot .r-নিম্ন{background:#e2f5ee;color:#1d7a5f}
+.chatbot .typing{display:inline-flex;gap:4px;padding:4px 0}.chatbot .typing i{width:7px;height:7px;border-radius:50%;background:#9db6bd;animation:dwb 1s infinite}.chatbot .typing i:nth-child(2){animation-delay:.15s}.chatbot .typing i:nth-child(3){animation-delay:.3s}
+@keyframes dwb{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.chatbot .suggest{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.chatbot .suggest button{border:1px solid var(--line);background:#f8fbfb;border-radius:20px;padding:7px 13px;font:600 12px 'DM Sans';cursor:pointer;color:var(--ink);text-align:left}
+.chatbot .suggest button:hover,.chatbot .suggest button:focus-visible{border-color:var(--teal);background:var(--teal2);outline:none}
+.chatbot .chat-form input:disabled,.chatbot .chat-form button:disabled{opacity:.6;cursor:wait}
+.chatbot [lang=bn]{font-family:'Noto Sans Bengali','Hind Siliguri','Kalpurush',sans-serif;line-height:1.75}
+@media(max-width:760px){.chatbot .chat-tools{flex-wrap:wrap}.chatbot .msg{max-width:96%}.chatbot .chat-log{height:calc(100vh - 520px)}}
+@media(prefers-reduced-motion:reduce){.chatbot .chat-log{scroll-behavior:auto}.chatbot .typing i{animation:none}}

@@ -72,7 +72,7 @@ async function runRisk(){
     out.innerHTML=`<div class="risk-hero">
       <div class="risk-big rk-${d.city_risk}"><small>${escapeHtml(d.city.toUpperCase())} · ${d.horizon}-WEEK OUTLOOK</small><b>${d.city_risk}</b><span>${msgs[d.city_risk]}</span></div>
       <div class="risk-side"><div class="risk-counts">${['Critical','High','Medium','Low'].map(k=>`<div class="rc rk-${k}"><b>${d.counts[k]}</b><span>${k.toUpperCase()}</span></div>`).join('')}</div>
-      <div class="risk-cmp"><span>From<br><b>${dateFmt(d.origin_date)}</b></span><span>Predicts week of<br><b>${dateFmt(d.target_date)}</b></span><span>Expected cases<br><b>${fmt(d.city_expected_cases)}</b></span>${d.backtest?`<span>Actually reported<br><b>${fmt(d.actual_total)}</b></span>`:`<span>Actual<br><b>not in data</b></span>`}</div></div>
+      <div class="risk-cmp"><span>From<br><b>${dateFmt(d.origin_date)}</b></span><span>Predicts week of<br><b>${dateFmt(d.target_date)}</b></span><span>Expected cases<br><b>${fmt(d.city_expected_cases)}</b></span>${d.backtest?`<span title="${(d.backtest_warning||'').replace(/"/g,'')}">Actually reported (in-sample ⓘ)<br><b>${fmt(d.actual_total)}</b></span>`:`<span>Actual<br><b>not in data</b></span>`}</div></div>
       <div class="lag-box"><h4>Rainfall, last 8 weeks${d.rain_mult!==1?` (recent 4 wks ×${d.rain_mult})`:''}</h4>${rainLagChart(d.rainfall_8w,d.rain_mult)}</div></div>
       <div class="ward-cards">${d.wards.slice(0,6).map((w,i)=>wardCard(w,i+1)).join('')}</div>
       <div class="more-row"><p class="risk-note">${escapeHtml(d.risk_note)} Model: ${escapeHtml(d.model)}. Research decision-support only, not an official alert.</p><button class="link-btn" data-go="wards">All ${d.wards.length} wards →</button></div>`;
@@ -149,35 +149,4 @@ function renderActions(){
 }
 $('#markAllRead').addEventListener('click',()=>{if(!rk.last)return;buildAlerts(rk.last).forEach(a=>readAlerts.add(a.id));store.set('dw.read',[...readAlerts]);renderAlerts();toast('All alerts marked as read');});
 
-/* ---- Ask assistant (rule-based over the on-screen prediction) ---- */
-const chat=[];
-const SUGGEST=['Which ward needs attention first?','Explain the main risk factors','What should we do this week?','How reliable is the forecast?','Give me a summary'];
-function answer(q){
-  const d=rk.last; if(!d) return {text:'Run a prediction on the Risk prediction page first.'};
-  const s=q.toLowerCase(), hi=d.wards.filter(w=>w.risk==='Critical'||w.risk==='High');
-  const m=s.match(/ward[_\s-]*0*(\d+)/); 
-  if(m){const w=d.wards.find(x=>x.ward_id.toLowerCase().endsWith('ward_'+String(m[1]).padStart(2,'0')));
-    if(w) return {text:`${w.ward_id} is ${w.risk}: ${fmt(w.predicted_cases)} expected cases/week${w.actual_cases!=null?` (actually reported: ${w.actual_cases})`:''}.`,list:w.drivers.map(x=>`${x.label} — ${x.detail}`)};
-    return {text:`I could not find that ward in ${d.city}. Wards here: ${d.wards.map(x=>x.ward_id).slice(0,4).join(', ')}…`};}
-  if(/(first|priorit|attention|worst|top|highest|which ward)/.test(s)) return {text:`Start with these wards in ${d.city}:`,list:d.wards.slice(0,3).map(w=>`${w.ward_id} — ${w.risk}, ${fmt(w.predicted_cases)} expected cases/week`)};
-  if(/(factor|driver|why|cause|rain|weather)/.test(s)){const c={};d.wards.forEach(w=>w.drivers.filter(x=>x.level==='high').forEach(x=>c[x.label]=(c[x.label]||0)+1));
-    const top=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,4);
-    return {text:'Main drivers across wards. Rain takes about 1–2 weeks to become mosquitoes, then 2–4 weeks to become cases.',list:top.length?top.map(([k,v])=>`${k}: ${v} of ${d.wards.length} wards`):['No strong risk driver found in this window.']};}
-  if(/(do|action|plan|recommend|should|todo|task)/.test(s)){const open=buildActions(d).filter(a=>!doneTasks.has(a.id));
-    return {text:open.length?`${open.length} open action${open.length>1?'s':''}. Next up:`:'All actions are complete.',list:open.slice(0,3).map(a=>`${a.title} — ${a.where} (${a.due})`)};}
-  if(/(confiden|reliab|accura|trust|error|metric)/.test(s)){const m=(state.data&&state.data.test_metrics)||{};
-    return {text:`Model: ${d.model}. Tested on 2023 onward data it kept out of training.`,list:[m.MAE!=null?`Average error about ${fmt(m.MAE)} cases per ward-week`:'Error metrics load on the Forecasts page',m.R2!=null?`R² ${Number(m.R2).toFixed(2)}`:'',d.backtest?`This back-test: predicted ${fmt(d.city_expected_cases)} vs actual ${fmt(d.actual_total)}`:'No actual data yet for this future week','Risk bands are simple thresholds, not calibrated probabilities.'].filter(Boolean)};}
-  if(/(summar|overview|status|situation|hello|\bhi\b)/.test(s)) return {text:`${d.city} is ${d.city_risk} for the week of ${dateFmt(d.target_date)} (${d.horizon}-week outlook).`,list:[`${d.counts.Critical} Critical, ${d.counts.High} High, ${d.counts.Medium} Medium, ${d.counts.Low} Low wards`,`Expected cases: ${fmt(d.city_expected_cases)}`,`${hi.length} wards need action`]};
-  return {text:'I can rank wards, explain risk drivers, list actions, check a ward (e.g. "ward 3"), or explain model reliability.'};
-}
-function renderChat(){
-  $('#chatLog').innerHTML=chat.map(m=>m.who==='user'?`<div class="msg user">${escapeHtml(m.text)}</div>`:`<div class="msg bot"><div class="lbl">✳ DENGUE WATCH</div>${escapeHtml(m.text)}${m.list?`<ul>${m.list.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`:''}</div>`).join('');
-  const l=$('#chatLog'); l.scrollTop=l.scrollHeight;
-}
-function ask(q){chat.push({who:'user',text:q});chat.push({who:'bot',...answer(q)});renderChat();}
-$('#suggest').innerHTML=SUGGEST.map(s=>`<button>${s}</button>`).join('');
-$('#suggest').addEventListener('click',e=>{const b=e.target.closest('button');if(b)ask(b.textContent);});
-$('#chatSend').addEventListener('click',()=>{const i=$('#chatInput');if(i.value.trim()){ask(i.value.trim());i.value='';}});
-$('#chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#chatSend').click();});
-$('#clearChat').addEventListener('click',()=>{chat.length=0;renderChat();});
 function refreshInsights(){renderAlerts();renderActions();}

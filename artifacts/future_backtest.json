@@ -1,0 +1,200 @@
+{
+ "method": "train on data before the test year; forecast the whole year using weather scenarios from earlier years only",
+ "per_year": [
+  {
+   "year": 2023,
+   "n_scenarios": 7,
+   "R2": 0.6657,
+   "MAE": 1.5612,
+   "PoissonDeviance": 1.4945,
+   "R2_climatology_baseline": 0.6508,
+   "MAE_climatology_baseline": 1.5946,
+   "R2_if_real_weather_known": 0.8753,
+   "R2_city_week": 0.7645,
+   "MAE_city_week": 15.1707,
+   "actual_total": 9955,
+   "predicted_total": 8346.3873,
+   "band_coverage_ward_week_p10_p90": 0.9016,
+   "total_error_pct": -16.1588,
+   "band_coverage_city_week_p10_p90": 0.8269,
+   "peak_week_actual": "2023-08-07",
+   "peak_week_predicted": "2023-08-28"
+  },
+  {
+   "year": 2024,
+   "n_scenarios": 8,
+   "R2": 0.6234,
+   "MAE": 1.2005,
+   "PoissonDeviance": 1.1142,
+   "R2_climatology_baseline": 0.5988,
+   "MAE_climatology_baseline": 1.2331,
+   "R2_if_real_weather_known": 0.8299,
+   "R2_city_week": 0.7621,
+   "MAE_city_week": 11.3573,
+   "actual_total": 6760,
+   "predicted_total": 8547.8517,
+   "band_coverage_ward_week_p10_p90": 0.9459,
+   "total_error_pct": 26.4475,
+   "band_coverage_city_week_p10_p90": 0.8642,
+   "peak_week_actual": "2024-08-26",
+   "peak_week_predicted": "2024-07-29"
+  },
+  {
+   "year": 2025,
+   "n_scenarios": 9,
+   "R2": 0.6257,
+   "MAE": 1.2275,
+   "PoissonDeviance": 1.1,
+   "R2_climatology_baseline": 0.6111,
+   "MAE_climatology_baseline": 1.2525,
+   "R2_if_real_weather_known": 0.8472,
+   "R2_city_week": 0.7552,
+   "MAE_city_week": 10.9625,
+   "actual_total": 7425,
+   "predicted_total": 8349.4296,
+   "band_coverage_ward_week_p10_p90": 0.9452,
+   "total_error_pct": 12.4502,
+   "band_coverage_city_week_p10_p90": 0.8846,
+   "peak_week_actual": "2025-06-30",
+   "peak_week_predicted": "2025-08-25"
+  }
+ ],
+ "mean": {
+  "n_scenarios": 8.0,
+  "R2": 0.6383,
+  "MAE": 1.3297,
+  "PoissonDeviance": 1.2363,
+  "R2_climatology_baseline": 0.6202,
+  "MAE_climatology_baseline": 1.3601,
+  "R2_if_real_weather_known": 0.8508,
+  "R2_city_week": 0.7606,
+  "MAE_city_week": 12.4968,
+  "actual_total": 8046.6667,
+  "predicted_total": 8414.5562,
+  "band_coverage_ward_week_p10_p90": 0.9309,
+  "total_error_pct": 7.5796,
+  "band_coverage_city_week_p10_p90": 0.8586
+ },
+ "per_city": [
+  {
+   "year": 2023,
+   "city": "Chattogram",
+   "actual": 1659,
+   "predicted": 1347.1,
+   "error_pct": -18.8,
+   "R2_week": 0.718
+  },
+  {
+   "year": 2023,
+   "city": "Dhaka North",
+   "actual": 3304,
+   "predicted": 2723.0,
+   "error_pct": -17.6,
+   "R2_week": 0.726
+  },
+  {
+   "year": 2023,
+   "city": "Dhaka South",
+   "actual": 3233,
+   "predicted": 2770.9,
+   "error_pct": -14.3,
+   "R2_week": 0.769
+  },
+  {
+   "year": 2023,
+   "city": "Gazipur",
+   "actual": 967,
+   "predicted": 834.0,
+   "error_pct": -13.8,
+   "R2_week": 0.742
+  },
+  {
+   "year": 2023,
+   "city": "Narayanganj",
+   "actual": 792,
+   "predicted": 671.3,
+   "error_pct": -15.2,
+   "R2_week": 0.735
+  },
+  {
+   "year": 2024,
+   "city": "Chattogram",
+   "actual": 1091,
+   "predicted": 1381.2,
+   "error_pct": 26.6,
+   "R2_week": 0.771
+  },
+  {
+   "year": 2024,
+   "city": "Dhaka North",
+   "actual": 2219,
+   "predicted": 2796.5,
+   "error_pct": 26.0,
+   "R2_week": 0.757
+  },
+  {
+   "year": 2024,
+   "city": "Dhaka South",
+   "actual": 2197,
+   "predicted": 2830.7,
+   "error_pct": 28.8,
+   "R2_week": 0.724
+  },
+  {
+   "year": 2024,
+   "city": "Gazipur",
+   "actual": 732,
+   "predicted": 852.1,
+   "error_pct": 16.4,
+   "R2_week": 0.73
+  },
+  {
+   "year": 2024,
+   "city": "Narayanganj",
+   "actual": 521,
+   "predicted": 687.4,
+   "error_pct": 31.9,
+   "R2_week": 0.623
+  },
+  {
+   "year": 2025,
+   "city": "Chattogram",
+   "actual": 1284,
+   "predicted": 1349.2,
+   "error_pct": 5.1,
+   "R2_week": 0.747
+  },
+  {
+   "year": 2025,
+   "city": "Dhaka North",
+   "actual": 2406,
+   "predicted": 2732.9,
+   "error_pct": 13.6,
+   "R2_week": 0.714
+  },
+  {
+   "year": 2025,
+   "city": "Dhaka South",
+   "actual": 2396,
+   "predicted": 2761.8,
+   "error_pct": 15.3,
+   "R2_week": 0.745
+  },
+  {
+   "year": 2025,
+   "city": "Gazipur",
+   "actual": 718,
+   "predicted": 835.8,
+   "error_pct": 16.4,
+   "R2_week": 0.704
+  },
+  {
+   "year": 2025,
+   "city": "Narayanganj",
+   "actual": 621,
+   "predicted": 669.7,
+   "error_pct": 7.8,
+   "R2_week": 0.732
+  }
+ ]
+}

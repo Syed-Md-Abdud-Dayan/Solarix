@@ -4,6 +4,7 @@ src/dengue_watch/__init__.py
 src/dengue_watch/eda.py
 src/dengue_watch/evaluation.py
 src/dengue_watch/features.py
+src/dengue_watch/future.py
 src/dengue_watch/pipeline.py
 src/dengue_watch_bangladesh.egg-info/PKG-INFO
 src/dengue_watch_bangladesh.egg-info/SOURCES.txt

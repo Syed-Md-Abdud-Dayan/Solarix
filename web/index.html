@@ -5,17 +5,18 @@
   <meta name="theme-color" content="#071b2c"><link rel="icon" type="image/png" href="assets/img/favicon.png"><link rel="apple-touch-icon" href="assets/img/logo.png"><meta name="description" content="Bangladesh ward-level dengue forecasting dashboard powered by trained machine-learning models.">
   <title>Dengue Watch | Model-powered early warning</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/dashboard.css">
   <link rel="stylesheet" href="assets/css/riskmap.css">
   <link rel="stylesheet" href="assets/css/accuracy.css">
+  <link rel="stylesheet" href="assets/css/chatbot.css">
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
       <a class="brand" href="#top"><img class="brand-logo" src="assets/img/logo.png" alt="Dengue Watch mosquito logo"><span>DENGUE<span class="brand-light">WATCH</span><small>MODEL-POWERED EARLY WARNING</small></span></a>
       <div class="side-label">WORKSPACE</div>
-      <nav><a class="nav-link active" href="#home" data-nav="home">⚠ <span>Risk prediction</span></a><a class="nav-link" href="#map" data-nav="map">▦ <span>Risk map</span></a><a class="nav-link" href="#forecast" data-nav="forecast">⌁ <span>Forecasts</span></a><a class="nav-link" href="#wards" data-nav="wards">⌖ <span>Ward explorer</span></a><a class="nav-link" href="#alerts" data-nav="alerts">🔔 <span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions">✓ <span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask">✳ <span>Ask Dengue Watch</span></a><a class="nav-link" href="#accuracy" data-nav="accuracy">▲ <span>Model accuracy</span></a><a class="nav-link" href="#method" data-nav="method">◉ <span>Model & data</span></a></nav>
+      <nav><a class="nav-link active" href="#home" data-nav="home">⚠ <span>Risk prediction</span></a><a class="nav-link" href="#map" data-nav="map">▦ <span>Risk map</span></a><a class="nav-link" href="#forecast" data-nav="forecast">⌁ <span>Forecasts</span></a><a class="nav-link" href="future.html">★ <span>Future 2026+</span></a><a class="nav-link" href="#wards" data-nav="wards">⌖ <span>Ward explorer</span></a><a class="nav-link" href="#alerts" data-nav="alerts">🔔 <span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions">✓ <span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask">✳ <span>Ask Dengue Watch</span></a><a class="nav-link" href="#accuracy" data-nav="accuracy">▲ <span>Model accuracy</span></a><a class="nav-link" href="#method" data-nav="method">◉ <span>Model & data</span></a></nav>
       <div class="sidebar-bottom"><div class="api-state"><i id="apiDot"></i><div><b id="apiStatus">Connecting to model API</b><small id="apiSub">Checking backend…</small></div></div><p>Forecast estimates are research outputs, not official public-health alerts.</p></div>
     </aside>
     <main id="top">
@@ -94,11 +95,14 @@
           <div class="panel-head"><div><span class="eyebrow">ACTION PLAN</span><h3 id="actionsTitle">This week's actions</h3><p class="muted">Tasks are generated from the highest-risk wards. Tap a task to mark it done; progress is saved in this browser.</p></div><div class="prog"><div class="ring" id="progRing"><b id="progText">0/0</b></div></div></div>
           <div id="actionList" class="action-list"></div>
         </section>
-        <section class="panel page-panel" id="askPage" data-page="ask">
-          <div class="panel-head"><div><span class="eyebrow">ASK DENGUE WATCH</span><h3>Ask about the current prediction</h3><p class="muted">Answers come from the trained model output on screen. Rule-based helper, not a live AI service.</p></div><button class="btn btn-outline" id="clearChat">Clear</button></div>
-          <div class="suggest" id="suggest"></div>
-          <div class="chat-log" id="chatLog"></div>
-          <div class="chat-form"><input id="chatInput" placeholder="e.g. Which ward needs attention first?" autocomplete="off"><button class="btn btn-primary" id="chatSend">Ask</button></div>
+        <section class="panel page-panel chatbot" id="askPage" data-page="ask" aria-labelledby="chatTitle">
+          <div class="panel-head"><div><span class="eyebrow">ASK DENGUE WATCH</span><h3 id="chatTitle">Dengue assistant</h3><p class="muted" id="chatSub">Dengue facts, danger signs and care, plus live risk answers from the trained models. English &amp; বাংলা. Not a doctor - it cannot diagnose.</p></div>
+            <div class="chat-tools"><div class="seg" id="chatLang" role="group" aria-label="Language"><button type="button" data-l="auto" class="on">Auto</button><button type="button" data-l="en">EN</button><button type="button" data-l="bn">বাংলা</button></div><button class="btn btn-outline" id="clearChat" type="button">Clear</button></div></div>
+          <div class="chat-emerg" id="chatEmerg"><b>Emergency?</b> Severe belly pain, repeated vomiting, bleeding, drowsiness, fast breathing or cold skin with fever: go to a hospital now. DGHS hotline 16263 · Emergency 999</div>
+          <div class="chat-ctx" id="chatCtx" hidden></div>
+          <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-label="Conversation"></div>
+          <div class="suggest" id="suggest" aria-label="Suggested questions"></div>
+          <form class="chat-form" id="chatForm" autocomplete="off"><input id="chatInput" maxlength="500" placeholder="Ask in English or বাংলা, e.g. risk in Dhaka North next 4 weeks" aria-label="Your question"><button class="btn btn-primary" id="chatSend" type="submit">Ask</button></form>
         </section>
         <div class="notice" data-page="method"><b>Important limitation</b><p id="noticeText">These are model estimates based on the historical dataset bundled with this project. They are not live case reports, official forecasts, or a substitute for public-health guidance.</p></div>
         <footer data-page="all"> DENGUE WATCH <span>·</span> Research decision-support prototype <span>·</span> Powered by saved scikit-learn models</footer>
@@ -110,4 +114,5 @@
   <script src="assets/js/riskmap.js"></script>
   <script src="assets/js/accuracy-data.js"></script>
   <script src="assets/js/accuracy.js"></script>
+  <script src="assets/js/chatbot.js"></script>
 </body></html>
