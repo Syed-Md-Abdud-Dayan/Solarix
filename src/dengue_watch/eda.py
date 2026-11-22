@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 def add_eda_payload(df, CITIES, TEST_START, R):
-    # ------------------------------------------------------------------ EDA payload
+    
     d0 = df.copy()
     d0["season_year"] = d0.year
     eda = {}

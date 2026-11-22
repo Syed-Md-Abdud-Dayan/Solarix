@@ -42,9 +42,7 @@ EMERGENCY = {
     },
 }
 
-# ---------------------------------------------------------------------------
-# Topics
-# ---------------------------------------------------------------------------
+
 TOPICS: dict[str, dict] = {
     "what_is": {
         "keywords": ["what is dengue", "dengue fever", "about dengue", "define dengue", "explain dengue", "dengue meaning",
@@ -351,9 +349,7 @@ TOPICS: dict[str, dict] = {
     },
 }
 
-# ---------------------------------------------------------------------------
-# Small-talk
-# ---------------------------------------------------------------------------
+
 SMALLTALK = {
     "greet": {
         "en": "Hello! I'm the Dengue Watch assistant. I can explain dengue (symptoms, warning signs, prevention, care), and use the forecasting models for Bangladesh wards: risk by city and ward, future seasons, rainfall what-ifs and model accuracy. What would you like to know?",
@@ -377,7 +373,6 @@ SMALLTALK = {
     },
 }
 
-# Suggestion chips (label per language). key -> text sent as the user message.
 SUGGESTIONS = {
     "en": ["What are the symptoms of dengue?", "Warning signs - when to go to hospital?", "How do I prevent dengue?",
            "Which wards in Dhaka North have the highest risk?", "Dengue risk next 4 weeks in Dhaka South",

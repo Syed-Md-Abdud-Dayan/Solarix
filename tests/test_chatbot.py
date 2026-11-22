@@ -9,8 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
-import app  # noqa: E402  (loads real models/data)
-from dengue_watch.chatbot import ChatEngine, detect_lang, find_red_flags, extract_entities  # noqa: E402
+import app  
+from dengue_watch.chatbot import ChatEngine, detect_lang, find_red_flags, extract_entities  
 
 
 class PinnedBackend(app.AppBackend):
@@ -24,8 +24,8 @@ class PinnedBackend(app.AppBackend):
         return self._today
 
 
-STALE = ChatEngine(PinnedBackend(date(2026, 11, 22)))                     # data ~46 weeks old -> seasonal forecasts
-FRESH = ChatEngine(PinnedBackend(date(2026, 1, 5)))                       # data 1 week old -> 12-week models
+STALE = ChatEngine(PinnedBackend(date(2026, 11, 22)))                     
+FRESH = ChatEngine(PinnedBackend(date(2026, 1, 5)))                       
 
 
 def ask(engine, msg, ctx=None, lang=None):
@@ -59,7 +59,7 @@ def test_symptom_check_gives_test_timing_and_no_nsaids():
     t = text_of(r).lower()
     assert "ns1" in t and "ibuprofen" in t
     r = ask(STALE, "my child has fever")
-    assert "today" in text_of(r).lower()      # higher-risk group -> same-day care
+    assert "today" in text_of(r).lower()      
 
 
 def test_no_dosing_or_nsaid_advice():
@@ -72,7 +72,7 @@ def test_red_flag_regex_misses_nothing_obvious():
     assert not find_red_flags("how to prevent dengue")
 
 
-# ---------------------------------------------------------------- language
+
 def test_language_detection_and_reply():
     assert detect_lang("ডেঙ্গুর লক্ষণ কী?") == "bn" and detect_lang("symptoms") == "en"
     r = ask(STALE, "ডেঙ্গুর লক্ষণ কী?")
@@ -86,7 +86,7 @@ def test_bangla_digits_and_city():
     assert e["city"] == "Dhaka North" and e["horizon"] == 4
 
 
-# ---------------------------------------------------------------- knowledge
+
 def test_knowledge_topics():
     cases = {"how do I prevent dengue": "prevention", "is dengue contagious": "transmission", "can I take ibuprofen": "treatment",
              "papaya leaf juice": "diet", "platelet count low": "platelets", "dengue vaccine": "vaccine", "NS1 test": "testing",
@@ -101,7 +101,7 @@ def test_off_topic_and_fallback():
     assert ask(STALE, "")["intent"] == "empty"
 
 
-# ---------------------------------------------------------------- data answers
+
 def test_stale_data_uses_seasonal_forecast_and_says_so():
     r = ask(STALE, "risk in Dhaka North next 4 weeks")
     assert r["intent"] == "forecast:city" and "Data note" in text_of(r)
@@ -148,7 +148,7 @@ def test_actions_by_risk_level():
     assert r["intent"] == "actions" and r["reply"]["bullets"]
 
 
-# ---------------------------------------------------------------- robustness
+
 def test_context_is_sanitised_and_message_truncated():
     r = ask(STALE, "hello", {"city": "Atlantis", "horizon": "abc", "evil": "<script>"})
     assert "evil" not in r["context"] and "city" not in r["context"]

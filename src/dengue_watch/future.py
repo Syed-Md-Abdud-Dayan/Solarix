@@ -25,7 +25,7 @@ from .features import build_features
 
 WEATHER = ["avg_temp_c", "max_temp_c", "min_temp_c", "rainfall_mm", "relative_humidity_pct"]
 STATIC = ["city", "population_density_sqkm", "water_logging_risk_index", "sanitation_score"]
-LOOKBACK_WEEKS = 30  # >= 12-week windows + 8-week lags
+LOOKBACK_WEEKS = 30  
 
 
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
@@ -45,7 +45,7 @@ def weather_scenarios(df: pd.DataFrame, before: str | pd.Timestamp | None = None
                  woy=iso.week.astype(int).clip(upper=52).values)
     scen = {}
     for y, g in d.groupby("iso_year"):
-        if g.date.nunique() < 52:  # skip partial years (e.g. a stray ISO week 1 of the next year)
+        if g.date.nunique() < 52: 
             continue
         scen[int(y)] = g.groupby(["ward_id", "woy"])[WEATHER].mean().reset_index()
     return scen
@@ -100,7 +100,7 @@ def forecast_weather_only(hist: pd.DataFrame, bundle: dict, dates, scenarios: di
     return pd.concat(out, ignore_index=True)
 
 
-DISPERSION = 1.4  # measured variance/mean of weekly ward cases (real weather known) = 1.36 -> negative binomial
+DISPERSION = 1.4  
 
 
 def _nb_draws(mu: np.ndarray, phi: float, n: int, rng) -> np.ndarray:
@@ -126,7 +126,7 @@ def summarize(long: pd.DataFrame, by=("ward_id", "city", "date"), n_draws: int =
     rng = np.random.RandomState(seed)
     D = _nb_draws(long.predicted_cases.values, phi, n_draws, rng)
     gid = long.groupby(keys, sort=True).ngroup().values
-    S = pd.DataFrame(D).groupby(gid).sum().values                      # unit x draws
+    S = pd.DataFrame(D).groupby(gid).sum().values                     
     units = long.groupby(keys, sort=True).predicted_cases.sum().reset_index()
     n_scen = long.scenario.nunique()
     n_by = len(units) // n_scen

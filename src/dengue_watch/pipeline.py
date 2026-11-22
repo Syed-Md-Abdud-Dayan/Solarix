@@ -48,25 +48,25 @@ def run_pipeline(csv_path: str, output_dir: str = "artifacts"):
         print("train", tr.sum(), "test", te.sum())
         res, preds = {}, {}
 
-        # --- baselines
+        
         clim = d[tr].groupby(["ward_id", "woy"]).dengue_cases.mean().rename("clim").reset_index()
         pc = d[te].merge(clim, on=["ward_id", "woy"], how="left").clim.fillna(d[tr].dengue_cases.mean()).values
         preds["Seasonal climatology"] = pc
         if sc["use_cases"]:
             preds["Persistence (last known week)"] = Xd.loc[te, "cases_lag0"].values
 
-        # --- Poisson GLM
+        
         Xg = Xd.copy()
         for c in Xg.columns:
             if c.startswith(("rain", "cases", "city_cases")): Xg[c] = np.log1p(Xg[c].clip(lower=0))
         glm = make_pipeline(StandardScaler(), PoissonRegressor(alpha=1e-3, max_iter=2000)).fit(Xg[tr], y[tr])
         preds["Poisson GLM"] = glm.predict(Xg[te])
 
-        # --- Random forest
+        
         rf = RandomForestRegressor(n_estimators=200, min_samples_leaf=5, max_features=0.4, n_jobs=-1, random_state=SEED).fit(Xd[tr], y[tr])
         preds["Random Forest"] = rf.predict(Xd[te])
 
-        # --- tuned Poisson gradient boosting
+        
         yrs = d.year.values
         cfg, cv_s = cv_hgb(Xd[tr].reset_index(drop=True), y[tr], yrs[tr])
         print("best HGB cfg", cfg, "cv deviance", round(cv_s, 4))
@@ -83,7 +83,7 @@ def run_pipeline(csv_path: str, output_dir: str = "artifacts"):
         best = min(ml, key=lambda k: res[k]["PoissonDeviance"])
         print("best:", best)
 
-        # --- importance + partial dependence (gradient boosting, test data)
+        
         groups = {}
         for c in Xd.columns: groups.setdefault(group_of(c), []).append(c)
         gi = group_importance(hgb, Xd[te].reset_index(drop=True), yt, groups)
@@ -97,11 +97,11 @@ def run_pipeline(csv_path: str, output_dir: str = "artifacts"):
                     r_ = partial_dependence(hgb, Xd[tr].sample(4000, random_state=SEED), [f], grid_resolution=18, kind="average")
                     pdp[f] = {"x": r_["grid_values"][0].tolist(), "y": r_["average"][0].tolist()}
 
-        # --- final refit on ALL data (2016-2025) for deployment
+        
         fin = HistGradientBoostingRegressor(loss="poisson", early_stopping=False, random_state=SEED, **cfg).fit(Xd, y)
         joblib.dump({"model": fin, "features": list(Xd.columns), "scenario": sc, "params": cfg}, f"{output_dir}/models/model_{sk}.joblib")
 
-        # --- dashboard payloads
+      
         pb = preds[best]
         tdf = meta.assign(y=yt, p=pb)
         wk = tdf.groupby("date")[["y", "p"]].sum().reset_index()

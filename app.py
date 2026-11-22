@@ -188,15 +188,11 @@ def dashboard_payload(params):
         "notice": "Forecasts are model estimates from the supplied dataset, not official live surveillance. Future weather is unknown; horizon models use only the historical inputs available at the forecast origin. Priority labels are relative ranks within the selected city."
     }
 
-
-# ---------------------------------------------------------------------------
-# Risk prediction engine: any origin date, any horizon, optional rainfall what-if
-# ---------------------------------------------------------------------------
-RISK_BANDS = [(9.0, "Critical"), (5.0, "High"), (2.0, "Medium"), (0.0, "Low")]  # expected cases / ward-week
+RISK_BANDS = [(9.0, "Critical"), (5.0, "High"), (2.0, "Medium"), (0.0, "Low")]  
 RISK_NOTE = ("Bands use expected weekly cases per ward: Low <2, Medium 2-5, High 5-9, Critical >=9 "
              "(roughly the 70th / 85th / 90th percentiles of historical ward-weeks).")
 DATES = sorted(_df.date.unique())
-KEEP_WEEKS = 30  # enough history for 12-week rolling windows + 8-week lags + horizon shift
+KEEP_WEEKS = 30  
 
 
 def risk_level(v: float) -> str:
@@ -245,7 +241,7 @@ def predict_at(origin, h: int, rain_mult: float = 1.0) -> pd.DataFrame:
     ids = work.loc[mask, "ward_id"].values
     ok = ~rows.isna().any(axis=1).values
     out = pd.DataFrame({"ward_id": ids[ok], "predicted_cases": np.maximum(0, MODELS[h]["model"].predict(rows[ok]))})
-    # ward context at the origin week (what the officer sees today)
+    
     ctx = hist[hist.date.eq(origin)][["ward_id", "city", "dengue_cases", "rainfall_mm", "avg_temp_c",
                                       "relative_humidity_pct", "population_density_sqkm",
                                       "water_logging_risk_index", "sanitation_score"]]
@@ -310,7 +306,7 @@ def risk_payload(params):
     pred = predict_at(origin, h, rain_mult)
     pred = pred[pred.city.eq(city)].sort_values("predicted_cases", ascending=False)
     pred["risk"] = pred.predicted_cases.map(risk_level)
-    # truth for back-testing, only when that week exists in the data
+    
     target = pd.Timestamp(pred.target_date.iloc[0])
     actual = _df[(_df.city.eq(city)) & (_df.date.eq(target))].set_index("ward_id").dengue_cases
     wards = []
@@ -327,10 +323,10 @@ def risk_payload(params):
     counts = {k: sum(w["risk"] == k for w in wards) for k in ("Critical", "High", "Medium", "Low")}
     city_total = round(float(pred.predicted_cases.sum()), 1)
     overall = risk_level(float(pred.predicted_cases.mean()) * 1.0) if wards else "Low"
-    # city risk is driven by the share of wards at High/Critical, not just the mean
+    
     share = (counts["Critical"] + counts["High"]) / max(1, len(wards))
     city_level = "Critical" if counts["Critical"] / max(1, len(wards)) >= 0.3 else "High" if share >= 0.3 else "Medium" if (share > 0 or counts["Medium"] / max(1, len(wards)) >= 0.3) else "Low"
-    # rainfall at origin for the lag explainer: last 8 weeks, city mean
+    
     rain = (_df[(_df.city.eq(city)) & (_df.date <= origin) & (_df.date > origin - timedelta(weeks=8))]
             .groupby("date").rainfall_mm.mean())
     if rain_mult != 1.0:
@@ -367,9 +363,7 @@ def map_payload(params):
             "risk_note": meta["risk_note"], "model": meta["model"], "cities": cities, "wards": wards}
 
 
-# ---------------------------------------------------------------------------
-# Long-range forecast: any date AFTER the data (2026, 2027, ... up to FUTURE_MAX)
-# ---------------------------------------------------------------------------
+
 FUTURE_MAX = pd.Timestamp("2030-12-31")
 _FUT_SCEN = FUT.weather_scenarios(_df)
 _FUT_CACHE: dict = {}
@@ -445,9 +439,7 @@ def future_payload(params):
     }
 
 
-# ---------------------------------------------------------------------------
-# Chatbot: backend adapter (the engine in dengue_watch/chatbot.py only talks to this)
-# ---------------------------------------------------------------------------
+
 try:
     CLASSIFICATION = json.loads((ROOT / "artifacts/classification_metrics.json").read_text(encoding="utf-8"))
 except Exception:
@@ -505,7 +497,7 @@ class AppBackend:
 CHAT = ChatEngine(AppBackend())
 _RATE: dict = {}
 _RATE_LOCK = threading.Lock()
-RATE_LIMIT, RATE_WINDOW = 40, 60  # messages per IP per minute
+RATE_LIMIT, RATE_WINDOW = 40, 60  
 MAX_BODY = 8 * 1024
 
 

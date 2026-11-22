@@ -21,7 +21,7 @@ from . import knowledge as K
 
 MAX_MESSAGE_CHARS = 500
 
-# ------------------------------------------------------------------ text helpers
+
 _BN_DIGITS = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
 _BN_RE = re.compile(r"[ঀ-৿]")
 
@@ -84,7 +84,7 @@ def fmt(n: float, d: int = 1) -> str:
     return f"{n:,.{d}f}".rstrip("0").rstrip(".") if d else f"{n:,.0f}"
 
 
-# ------------------------------------------------------------------ red flags / symptoms
+
 _PERSONAL = re.compile(r"\b(i|i'm|im|my|me|he|she|his|her|him|they|patient|son|daughter|mother|mom|mum|father|dad|baby|child|kid|wife|husband|"
                        r"brother|sister|friend|someone|neighbou?r|is|has|have|having|getting|started|keeps?|can't|cant|cannot)\b|"
                        r"আমার|আমি|তার|সে|ছেলে|মেয়ে|বাবা|মা |রোগী|হচ্ছে|হয়েছে|করছে|হয়|দিচ্ছে|পারছে না|পারছি না")
@@ -112,7 +112,7 @@ def find_red_flags(text: str) -> list[str]:
     return [n for rx, n in _RED_COMPILED if rx.search(text)]
 
 
-# ------------------------------------------------------------------ KB matching
+
 _KB_VOCAB = sorted({w for t in K.TOPICS.values() for kw in t["keywords"] for w in re.findall(r"[a-z]{4,}", kw)})
 
 
@@ -147,7 +147,7 @@ def match_topic(text: str) -> tuple[Optional[str], float]:
     return best, best_score
 
 
-# ------------------------------------------------------------------ entities
+
 def extract_entities(raw: str, cities: list[str], today: date) -> dict[str, Any]:
     t = norm_text(raw)
     ent: dict[str, Any] = {}
@@ -162,7 +162,7 @@ def extract_entities(raw: str, cities: list[str], today: date) -> dict[str, Any]
     if found:
         ent["cities"] = found
         ent["city"] = found[0]
-    # ward id like DNCC_Ward_05, or "ward 5"
+   
     m = re.search(r"\b(dncc|dscc|ccc|gcc|ncc)[\s_-]*ward[\s_-]*0*(\d{1,3})\b", t)
     if m:
         ent["ward_no"] = int(m.group(2)); ent["city"] = WARD_PREFIX_CITY[m.group(1)]; ent["cities"] = [ent["city"]]
@@ -188,7 +188,7 @@ def extract_entities(raw: str, cities: list[str], today: date) -> dict[str, Any]
                 ent["horizon_from_months"] = True
             elif re.search(r"next month|coming month|upcoming month|আগামী মাস|পরের মাস", t):
                 ent["horizon"] = 4
-    # explicit month / year
+    
     for name, num in MONTHS.items():
         if name in ("may", "mar", "dec", "sep", "oct", "nov", "jan", "feb", "apr", "jun", "jul", "aug", "sept") and not re.search(rf"(?<![a-z]){name}(?![a-z])", t):
             continue
@@ -233,7 +233,7 @@ def extract_entities(raw: str, cities: list[str], today: date) -> dict[str, Any]
     return ent
 
 
-# ------------------------------------------------------------------ the engine
+
 class ChatEngine:
     """backend must provide: cities, latest, today(), risk(), future(), actuals(), season(), accuracy(), info()."""
 
@@ -242,7 +242,7 @@ class ChatEngine:
     def __init__(self, backend):
         self.b = backend
 
-    # -- public ---------------------------------------------------------
+    
     def reply(self, message: str, context: Optional[dict] = None, lang: Optional[str] = None) -> dict:
         ctx = self._clean_ctx(context)
         message = (message or "").strip()[:MAX_MESSAGE_CHARS]
@@ -254,7 +254,7 @@ class ChatEngine:
         ent = extract_entities(message, list(self.b.cities), self.b.today())
         try:
             out = self._route(t, ent, ctx, L, raw_t)
-        except Exception as exc:  # never let a data failure break the conversation
+        except Exception as exc:  
             out = self._pack(L, ctx, "error", self._t(L, "I couldn't get that from the forecasting models just now. Please try again, or ask me a general dengue question.",
                                                        "মডেল থেকে এখন তথ্য আনতে পারিনি। আবার চেষ্টা করুন, অথবা ডেঙ্গু সম্পর্কে সাধারণ প্রশ্ন করুন।"),
                              suggestions=self._chips(L), debug=str(exc)[:200])
@@ -262,7 +262,7 @@ class ChatEngine:
         out["context"]["turns"] = int(ctx.get("turns", 0)) + 1
         return out
 
-    # -- plumbing -------------------------------------------------------
+    
     def _clean_ctx(self, ctx) -> dict:
         out = {}
         if isinstance(ctx, dict):
@@ -325,24 +325,24 @@ class ChatEngine:
         return self._pack(L, ctx, f"kb:{tid}", text, title=d["title"], bullets=bullets, severity=severity,
                           suggestions=self._chips(L, d.get("follow_ups")), sources=["WHO dengue guidance", "DGHS Bangladesh"], entities=entities)
 
-    # -- routing --------------------------------------------------------
+   
     def _route(self, t: str, ent: dict, ctx: dict, L: str, raw_t: str = "") -> dict:
         cities = list(self.b.cities)
-        # carry over city/horizon from conversation when not stated
+       
         c_city = ent.get("city") or ctx.get("city")
         has_dengue = bool(_DENGUE_WORD.search(t))
 
-        # 1. Safety first: red flags in a personal context -> emergency
+        
         flags = find_red_flags(raw_t or t)
         personal = bool(_PERSONAL.search(t))
         info_q = bool(_INFO_Q.search(raw_t)) and not re.search(r"\b(my|his|her|i|i'm|me|he|she)\b|আমার|আমি|তার", raw_t)
         if flags and not info_q:
             return self._emergency(L, ctx, flags, ent)
-        # 2. Symptom report: personal + fever
+        
         if _FEVER.search(t) and personal and not info_q and not re.search(r"forecast|risk|ward|predict|ঝুঁকি|পূর্বাভাস", t):
             return self._symptom_check(L, ctx, t, ent, flags)
 
-        # 3. small talk
+   
         if re.fullmatch(r"(hi|hello|hey|salam|assalamu alaikum|assalamualaikum|good (morning|afternoon|evening)|হ্যালো|হাই|আসসালামু আলাইকুম|সালাম|নমস্কার)[!. ]*", t):
             return self._pack(L, ctx, "greet", K.SMALLTALK["greet"][L])
         if re.search(r"\b(thanks|thank you|thx|ty|appreciate)\b|ধন্যবাদ|শুকরিয়া", t) and len(t) < 40:
@@ -390,14 +390,14 @@ class ChatEngine:
         if peak_q and re.search(r"\bdengue|\bcases|peak|ডেঙ্গু", t) and not re.search(r"\bvaccine\b", t):
             return self._season(L, ctx, ent)
 
-        # 5. knowledge base
+       
         tid, score = match_topic(t)
         if tid and score >= 1.0:
             if tid == "community" and (c_city or action_q) and ctx.get("intent", "").startswith(("risk", "top")):
                 return self._actions(L, ctx, ent, c_city)
             return self._topic(L, ctx, tid, entities=ent)
 
-        # 6. bare follow-ups using conversation memory ("what about Gazipur?", "and 8 weeks?", "why?")
+        
         last = ctx.get("intent", "")
         if (ent.get("city") or "horizon" in ent) and last.startswith(("risk", "top", "ward", "forecast", "compare", "actions")):
             if last.startswith("top"):
@@ -418,7 +418,7 @@ class ChatEngine:
             return self._topic(L, ctx, "what_is", entities=ent)
         return self._pack(L, ctx, "fallback", K.SMALLTALK["fallback"][L], suggestions=self._chips(L))
 
-    # -- safety ---------------------------------------------------------
+   
     def _emergency(self, L, ctx, flags, ent):
         e = K.EMERGENCY[L]
         seen = self._t(L, "You mentioned: ", "আপনি উল্লেখ করেছেন: ") + ", ".join(FLAG_BN.get(f, f) if L == "bn" else f for f in flags)
@@ -464,7 +464,7 @@ class ChatEngine:
                                    self._t(L, "Model accuracy and data coverage", "মডেলের নির্ভুলতা ও ডেটার পরিধি"),
                                    self._t(L, "You can write in English or Bangla.", "আপনি ইংরেজি বা বাংলায় লিখতে পারেন।")])
 
-    # -- data helpers ---------------------------------------------------
+  
     def _stale(self) -> bool:
         return (self.b.today() - self.b.latest.date()).days > 12 * 7 + 7
 
@@ -485,12 +485,12 @@ class ChatEngine:
         h = ent.get("horizon") or ctx.get("horizon") or default
         return max(1, min(12, int(h)))
 
-    # -- city risk ------------------------------------------------------
+    
     def _city_risk(self, L, ctx, ent, c_city):
         city = self._pick_city(ent, c_city)
         h = self._horizon(ent, ctx)
         if self._stale() and not ent.get("as_of"):
-            # no data near "now": use the seasonal long-range forecast for the asked window starting today
+            
             start = self.b.today()
             end = start + timedelta(weeks=h)
             return self._future_window(L, ctx, ent, city, start, end, label=self._t(L, f"next {h} weeks", f"আগামী {h} সপ্তাহ"), intent="forecast:city")
@@ -520,7 +520,7 @@ class ChatEngine:
                 {"label": self._t(L, "If rain doubles", "বৃষ্টি দ্বিগুণ হলে"), "text": self._t(L, f"What if rainfall doubles in {city}?", f"{self._city_name(L, city)}-এ বৃষ্টি দ্বিগুণ হলে কী হবে?")},
                 {"label": self._t(L, "Compare cities", "শহর তুলনা"), "text": self._t(L, "Compare cities", "শহর তুলনা করুন")}]
 
-    # -- top wards ------------------------------------------------------
+    
     def _top_wards(self, L, ctx, ent, c_city):
         city = c_city
         if not city:
@@ -539,7 +539,7 @@ class ChatEngine:
                           notes=[d["risk_note"]], suggestions=[{"label": self._t(L, f"Details: {top[0]['ward_id']}", f"বিস্তারিত: {top[0]['ward_id']}"), "text": top[0]["ward_id"]}] + self._follow_data(L, city)[1:3] if top else None,
                           sources=["Dengue Watch gradient-boosting model"], new_ctx={"city": city, "horizon": h, "ward_id": top[0]["ward_id"] if top else None}, entities=ent)
 
-    # -- ward detail ----------------------------------------------------
+    
     def _ward(self, L, ctx, ent, c_city):
         city = c_city
         ward_id = ent.get("ward_id")
@@ -549,7 +549,7 @@ class ChatEngine:
             return self._need_city(L, ctx, "ward", ent)
         h = self._horizon(ent, ctx)
         if self._stale():
-            h_data = 12  # still show ward vulnerability profile from the latest observed week
+            h_data = 12  
         d = self.b.risk(city, min(h, 12), None, float(ent.get("rain_mult", 1.0)))
         if ward_id is None:
             ward_id = next((w["ward_id"] for w in d["wards"] if w["ward_id"].endswith(f"_{ent['ward_no']:02d}")), None)
@@ -590,7 +590,7 @@ class ChatEngine:
         b.append(K.TOPICS["rain_link"][L]["body"][1])
         return self._pack(L, ctx, "risk:drivers", self._t(L, f"What is driving risk in {city}:", f"{self._city_name(L, city)}-এ ঝুঁকির কারণ:"), bullets=b, new_ctx={"city": city}, entities=ent, suggestions=self._follow_data(L, city)[:3])
 
-    # -- compare --------------------------------------------------------
+   
     def _compare(self, L, ctx, ent):
         cities = ent.get("cities") or list(self.b.cities)
         h = self._horizon(ent, ctx)
@@ -618,7 +618,7 @@ class ChatEngine:
         return self._pack(L, ctx, "compare", text, title=self._t(L, "City comparison", "শহরের তুলনা"), table={"columns": cols, "rows": rows}, notes=notes,
                           new_ctx={"horizon": h}, entities=ent, suggestions=[{"label": self._city_name(L, c), "text": c} for c, _ in order[:4]], sources=["Dengue Watch models"])
 
-    # -- future / month / year -----------------------------------------
+   
     def _time_forecast(self, L, ctx, ent, c_city):
         city = "All" if ent.get("all_cities") else (c_city or "All")
         today = self.b.today()
@@ -677,7 +677,7 @@ class ChatEngine:
                           notes=notes, severity="info", suggestions=self._follow_data(L, city if city != "All" else self.b.cities[0])[:4], sources=["Dengue Watch long-range weather-scenario forecast"],
                           new_ctx={"city": city if city != "All" else None, "year": start.year, "month": start.month if (end - start).days < 40 else None}, entities=ent)
 
-    # -- what-if --------------------------------------------------------
+   
     def _whatif(self, L, ctx, ent, c_city):
         city = c_city
         if not city:
@@ -725,7 +725,7 @@ class ChatEngine:
         return self._pack(L, ctx, "whatif", text, title=self._t(L, "Weather scenario", "আবহাওয়ার পরিস্থিতি"), notes=notes, new_ctx={"city": city, "horizon": h, "rain_mult": mult},
                           suggestions=self._follow_data(L, city)[:3], sources=["Dengue Watch models"], entities=ent)
 
-    # -- history / season ----------------------------------------------
+   
     def _history(self, L, ctx, ent, c_city):
         city = "All" if ent.get("all_cities") else (c_city or "All")
         year, month = ent.get("year"), ent.get("month")
