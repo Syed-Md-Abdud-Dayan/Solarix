@@ -101,8 +101,7 @@ briefs" bundle, EN / বাংলা toggle, mobile layout for field teams, inst
   total bed requirement (covers all but the worst 1% of weeks), split by population density. Patients go to the lowest-utilisation ward in the same city.
 - **Simulator**: crews raise coverage, which scales the ward's recent breeding-rainfall and transmission inputs; the
   2/3/4-week ML models are re-run on those inputs.
-- Full details and assumptions: [ARCHITECTURE.md](ARCHITECTURE.md#phase-2-onsite-final-operations-command-system), [docs/OFFLINE.md](docs/OFFLINE.md),
-  Q&A prep: [docs/QA_CHEATSHEET.md](docs/QA_CHEATSHEET.md).
+- Full details and assumptions: [ARCHITECTURE.md](ARCHITECTURE.md#phase-2-onsite-final-operations-command-system) & [docs/OFFLINE.md](docs/OFFLINE.md)
 
 ### Demo logins (DEMO ONLY)
 
