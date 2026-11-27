@@ -1,0 +1,13 @@
+# SMS primary (96 chars, GSM-7)
+DengueWatch DNCC_Ward_03 beds need 2, cap 1, deficit 1. Route 1->DNCC_Ward_04. Ref DW-9DCA8FE8BE
+
+# SMS long version (3 part(s))
+[DW-9DCA8FE8BE] Dengue Watch dispatch - Hospital bed team
+Ward DNCC_Ward_03 (Dhaka North), week of 2025-08-11
+Predicted cases: 5.9 (risk High, +/-1.04)
+Saline bags: 14/14
+Diagnostic kits: 7/7
+Hospital beds: 2/2
+Spraying crews assigned: 0/2 (sequence #41)
+Transfer 1 patient(s) to DNCC_Ward_04
+Reply ACK to confirm.

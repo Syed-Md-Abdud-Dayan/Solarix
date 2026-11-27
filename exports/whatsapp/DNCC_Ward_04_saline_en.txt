@@ -1,0 +1,16 @@
+*Dengue Watch dispatch* - Saline & kits team
+Ward: *DNCC_Ward_04* (Dhaka North)
+Week: 2025-08-11
+Predicted cases: *4.7* (risk *Medium*)
+
+*Supplies (allocated / required)*
+• Saline bags: 11/11
+• Diagnostic kits: 6/6
+• Hospital beds: 1/1
+• Spraying crews: 0/2 (order #44)
+
+*Hospital beds*: demand 1, capacity 3, net deficit 0
+← Receive 1 patient(s) from DNCC_Ward_03
+← Receive 1 patient(s) from DNCC_Ward_09
+
+_Ref DW-345C5998D2. Reply ACK to confirm._

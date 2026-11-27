@@ -1,0 +1,14 @@
+*Dengue Watch dispatch* - Saline & kits team
+Ward: *NCC_Ward_02* (Narayanganj)
+Week: 2025-08-11
+Predicted cases: *4.5* (risk *Medium*)
+
+*Supplies (allocated / required)*
+• Saline bags: 0/11 ⚠️
+• Diagnostic kits: 0/5 ⚠️
+• Hospital beds: 0/1 ⚠️
+• Spraying crews: 0/1 (order #59)
+
+⚠️ *DEFICIT ALERT (CRITICAL)*: 0.0% fulfilled
+
+_Ref DW-99196E6799. Reply ACK to confirm._

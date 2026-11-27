@@ -1,0 +1,16 @@
+*Dengue Watch dispatch* - Hospital bed team
+Ward: *NCC_Ward_02* (Narayanganj)
+Week: 2025-08-11
+Predicted cases: *4.5* (risk *Medium*)
+
+*Supplies (allocated / required)*
+• Saline bags: 0/11 ⚠️
+• Diagnostic kits: 0/5 ⚠️
+• Hospital beds: 0/1 ⚠️
+• Spraying crews: 0/1 (order #59)
+
+⚠️ *DEFICIT ALERT (CRITICAL)*: 0.0% fulfilled
+
+*Hospital beds*: demand 1, capacity 1, net deficit 0
+
+_Ref DW-345D1DCC35. Reply ACK to confirm._

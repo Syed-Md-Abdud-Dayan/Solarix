@@ -1,0 +1,14 @@
+# SMS primary (73 chars, GSM-7)
+DengueWatch DSCC_Ward_02 beds need 1, cap 2, deficit 0. Ref DW-1C3ED47049
+
+# SMS long version (3 part(s))
+[DW-1C3ED47049] Dengue Watch dispatch - Hospital bed team
+Ward DSCC_Ward_02 (Dhaka South), week of 2025-08-11
+Predicted cases: 4.7 (risk Medium, +/-1.04)
+Saline bags: 10/11
+Diagnostic kits: 3/5
+Hospital beds: 1/1
+Spraying crews assigned: 0/1 (sequence #48)
+DEFICIT ALERT (WARNING): only 60% can be supplied. Saline bags -1, Diagnostic kits -2, Spraying crews -1 (priority rank 48 of 60)
+Receive 1 patient(s) from DSCC_Ward_03
+Reply ACK to confirm.

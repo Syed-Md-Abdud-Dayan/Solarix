@@ -1,0 +1,14 @@
+*Dengue Watch dispatch* - Hospital bed team
+Ward: *DNCC_Ward_19* (Dhaka North)
+Week: 2025-08-11
+Predicted cases: *7.5* (risk *High*)
+
+*Supplies (allocated / required)*
+• Saline bags: 18/18
+• Diagnostic kits: 9/9
+• Hospital beds: 2/2
+• Spraying crews: 0/3 (order #13)
+
+*Hospital beds*: demand 2, capacity 2, net deficit 0
+
+_Ref DW-56807404A1. Reply ACK to confirm._

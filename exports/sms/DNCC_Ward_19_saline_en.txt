@@ -1,0 +1,12 @@
+# SMS primary (97 chars, GSM-7)
+DengueWatch DNCC_Ward_19 High: 7.5 cases wk 2025-08-11. Saline 18/18, kits 9/9. Ref DW-0FC661D405
+
+# SMS long version (2 part(s))
+[DW-0FC661D405] Dengue Watch dispatch - Saline & kits team
+Ward DNCC_Ward_19 (Dhaka North), week of 2025-08-11
+Predicted cases: 7.5 (risk High, +/-1.04)
+Saline bags: 18/18
+Diagnostic kits: 9/9
+Hospital beds: 2/2
+Spraying crews assigned: 0/3 (sequence #13)
+Reply ACK to confirm.

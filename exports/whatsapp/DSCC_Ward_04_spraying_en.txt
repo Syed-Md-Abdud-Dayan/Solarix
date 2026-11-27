@@ -1,0 +1,15 @@
+*Dengue Watch dispatch* - Spraying team
+Ward: *DSCC_Ward_04* (Dhaka South)
+Week: 2025-08-11
+Predicted cases: *9.8* (risk *Critical*)
+
+*Supplies (allocated / required)*
+• Saline bags: 23/23
+• Diagnostic kits: 11/11
+• Hospital beds: 3/3
+• Spraying crews: 4/4 (order #1)
+
+*Hospital beds*: demand 3, capacity 4, net deficit 0
+← Receive 1 patient(s) from DSCC_Ward_05
+
+_Ref DW-BE3D81C5E1. Reply ACK to confirm._
