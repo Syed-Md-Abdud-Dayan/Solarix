@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#071b2c"><link rel="icon" type="image/png" href="assets/img/favicon.png"><link rel="apple-touch-icon" href="assets/img/logo.png"><meta name="description" content="Bangladesh ward-level dengue forecasting dashboard powered by trained machine-learning models.">
+  <meta name="theme-color" content="#10291c"><link rel="icon" type="image/png" href="assets/img/favicon.png"><link rel="apple-touch-icon" href="assets/img/logo.png"><meta name="description" content="Bangladesh ward-level dengue forecasting dashboard powered by trained machine-learning models.">
   <title>Dengue Watch | Model-powered early warning</title>
   <link rel="stylesheet" href="assets/fonts/fonts.css"><link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="assets/css/dashboard.css">
@@ -10,13 +10,78 @@
   <link rel="stylesheet" href="assets/css/accuracy.css">
   <link rel="stylesheet" href="assets/css/chatbot.css">
   <link rel="stylesheet" href="assets/css/mobile.css">
+  <link rel="stylesheet" href="assets/css/forest.css">
+  <link rel="stylesheet" href="assets/css/intro.css">
+  <script>try{if(!sessionStorage.getItem('dw.intro'))document.documentElement.classList.add('intro-on')}catch(e){document.documentElement.classList.add('intro-on')}</script>
 </head>
 <body>
+  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="intro-rays"></div>
+    <svg class="intro-trees" viewBox="0 0 1440 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+    <div class="intro-fog"></div>
+    <div class="intro-brand"><img src="assets/img/logo.png" alt="">DENGUE<span>WATCH</span></div>
+    <button class="intro-skip" type="button">Skip ›</button>
+    <div class="intro-stage" aria-hidden="true">
+      <svg class="splat" viewBox="0 0 120 100"><path fill="#a3211a" d="M60 18Q70 2 76 20Q96 6 90 30Q114 30 96 46Q114 64 90 64Q96 88 74 76Q66 98 56 78Q34 94 36 70Q10 70 26 52Q6 38 30 32Q24 10 46 22Q50 4 60 18Z"/><path fill="#c8352b" d="M58 30Q70 24 76 36Q90 40 80 52Q84 66 68 64Q58 74 48 64Q34 62 40 50Q32 38 46 36Q50 28 58 30Z"/><circle cx="108" cy="20" r="4" fill="#a3211a"/><circle cx="14" cy="84" r="3.5" fill="#a3211a"/><circle cx="104" cy="86" r="2.6" fill="#a3211a"/><circle cx="12" cy="20" r="2.4" fill="#a3211a"/><circle cx="62" cy="96" r="2" fill="#a3211a"/></svg>
+      <div class="mz-wrap"><svg class="mz" viewBox="0 0 140 90">
+        <defs><clipPath id="mzAbd"><ellipse cx="100" cy="51" rx="28" ry="6.5" transform="rotate(14 100 51)"/></clipPath></defs>
+        <g class="mz-wing w1"><ellipse cx="88" cy="24" rx="28" ry="8" transform="rotate(-28 88 24)" fill="#dff0e6" fill-opacity=".38" stroke="#ffffff" stroke-opacity=".6"/></g>
+        <g class="mz-wing w2"><ellipse cx="94" cy="30" rx="25" ry="7" transform="rotate(-10 94 30)" fill="#dff0e6" fill-opacity=".3" stroke="#ffffff" stroke-opacity=".5"/></g>
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="#1c1c1c" stroke-width="1.5" d="M58 48L44 62L28 84M63 50L58 66L50 88M68 49L80 64L96 86M70 48L96 60L126 76"/>
+          <path stroke="#f0f0f0" stroke-width="1.6" stroke-dasharray="1.6 6" d="M44 62L28 84M58 66L50 88M80 64L96 86M96 60L126 76"/>
+          <path stroke="#2a2a2a" stroke-width="1" d="M46 40q-8-8-16-8M47 39q-5-10-12-13"/>
+          <path stroke="#1c1c1c" stroke-width="1.7" d="M44 46L16 57"/>
+        </g>
+        <ellipse cx="100" cy="51" rx="28" ry="6.5" transform="rotate(14 100 51)" fill="#161616"/>
+        <line x1="72" y1="44" x2="128" y2="58" stroke="#ededed" stroke-width="16" stroke-dasharray="2.4 6.2" clip-path="url(#mzAbd)"/>
+        <ellipse cx="64" cy="42" rx="11" ry="9" fill="#202020"/>
+        <path d="M60 36.5q4 4.5 0 9.5M68 36.5q-4 4.5 0 9.5" stroke="#efefef" stroke-width="1.3" fill="none"/>
+        <circle cx="49" cy="44" r="6" fill="#1b1b1b"/><circle cx="47" cy="43" r="2.4" fill="#4a4a4a"/>
+      </svg></div>
+      <div class="hand"><svg viewBox="0 0 200 260">
+        <g fill="#e2a97c">
+          <rect x="52" y="34" width="27" height="130" rx="13.5"/><rect x="82" y="14" width="28" height="150" rx="14"/>
+          <rect x="113" y="22" width="28" height="142" rx="14"/><rect x="144" y="50" width="25" height="116" rx="12.5"/>
+          <rect x="48" y="112" width="124" height="134" rx="56"/>
+          <rect x="6" y="132" width="30" height="96" rx="15" transform="rotate(-38 21 180)"/>
+        </g>
+        <g fill="none" stroke="#c4875d" stroke-width="2.2" stroke-linecap="round" opacity=".7">
+          <path d="M80 122v-30M111 122v-40M142 124v-32"/><path d="M70 200q30 14 70 0" opacity=".6"/>
+        </g>
+        <g fill="#f0c6a3"><rect x="58" y="40" width="15" height="14" rx="6"/><rect x="89" y="20" width="15" height="14" rx="6"/><rect x="120" y="28" width="15" height="14" rx="6"/><rect x="149" y="56" width="14" height="13" rx="6"/></g>
+      </svg></div>
+    </div>
+    <div class="intro-copy">
+      <h1 id="introTitle" lang="bn">ডেঙ্গুকে <em>না</em> বলুন</h1>
+      <p>Say no to dengue</p>
+      <button class="intro-start" type="button"><b lang="bn">শুরু করুন</b> Start <i aria-hidden="true">→</i></button>
+    </div>
+  </div>
+  <script src="assets/js/intro.js"></script>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-risk" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/><path d="M12 8v5M12 16.5v.01"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></symbol>
+    <symbol id="i-ward" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20.5a2 2 0 004 0"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8.5 12.5l2.5 2.5 5-6"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-6 4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><path d="M12 12h.01"/></symbol>
+    <symbol id="i-data" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.8"/><path d="M5 6v12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19C5 10 11 4 20 4c0 9-6 15-15 15z"/><path d="M5 19l8-8"/></symbol>
+    <symbol id="i-hq" viewBox="0 0 24 24"><path d="M4 20h16M6 20V10l6-5 6 5v10"/><path d="M10 20v-5h4v5"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></symbol>
+  </svg>
   <div class="shell">
     <aside class="sidebar">
       <a class="brand" href="#top"><img class="brand-logo" src="assets/img/logo.png" alt="Dengue Watch mosquito logo"><span>DENGUE<span class="brand-light">WATCH</span><small>MODEL-POWERED EARLY WARNING</small></span></a>
-      <div class="side-label">WORKSPACE</div>
-      <nav><a class="nav-link active" href="#home" data-nav="home">⚠ <span>Risk prediction</span></a><a class="nav-link" href="#map" data-nav="map">▦ <span>Risk map</span></a><a class="nav-link" href="#forecast" data-nav="forecast">⌁ <span>Forecasts</span></a><a class="nav-link" href="future.html">★ <span>Future 2026+</span></a><a class="nav-link" href="ops/login.html">⚑ <span>Command Center</span></a><a class="nav-link" href="#wards" data-nav="wards">⌖ <span>Ward explorer</span></a><a class="nav-link" href="#alerts" data-nav="alerts">🔔 <span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions">✓ <span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask">✳ <span>Ask Dengue Watch</span></a><a class="nav-link" href="#accuracy" data-nav="accuracy">▲ <span>Model accuracy</span></a><a class="nav-link" href="#method" data-nav="method">◉ <span>Model & data</span></a></nav>
+      <nav aria-label="Dashboard sections">
+        <div class="nav-group"><div class="side-label">MONITOR</div><a class="nav-link" href="#home" data-nav="home"><svg class="ico"><use href="#i-risk"/></svg><span>Risk prediction</span></a><a class="nav-link" href="#map" data-nav="map"><svg class="ico"><use href="#i-map"/></svg><span>Risk map</span></a><a class="nav-link" href="#forecast" data-nav="forecast"><svg class="ico"><use href="#i-trend"/></svg><span>Forecasts</span></a><a class="nav-link" href="#wards" data-nav="wards"><svg class="ico"><use href="#i-ward"/></svg><span>Ward explorer</span></a></div>
+        <div class="nav-group"><div class="side-label">RESPOND</div><a class="nav-link" href="#alerts" data-nav="alerts"><svg class="ico"><use href="#i-bell"/></svg><span>Alerts</span><em class="nav-badge" id="navAlerts">0</em></a><a class="nav-link" href="#actions" data-nav="actions"><svg class="ico"><use href="#i-check"/></svg><span>Action plan</span><em class="nav-badge soft" id="navActions">0</em></a><a class="nav-link" href="#ask" data-nav="ask"><svg class="ico"><use href="#i-chat"/></svg><span>Ask Dengue Watch</span></a></div>
+        <div class="nav-group"><div class="side-label">MODEL</div><a class="nav-link" href="#accuracy" data-nav="accuracy"><svg class="ico"><use href="#i-target"/></svg><span>Model accuracy</span></a><a class="nav-link" href="#method" data-nav="method"><svg class="ico"><use href="#i-data"/></svg><span>Model &amp; data</span></a></div>
+        <div class="nav-group"><div class="side-label">MORE</div><a class="nav-link" href="future.html"><svg class="ico"><use href="#i-leaf"/></svg><span>Future 2026+</span><svg class="ext"><use href="#i-ext"/></svg></a><a class="nav-link" href="ops/login.html"><svg class="ico"><use href="#i-hq"/></svg><span>Command Center</span><svg class="ext"><use href="#i-ext"/></svg></a></div>
+      </nav>
       <div class="sidebar-bottom"><div class="api-state"><i id="apiDot"></i><div><b id="apiStatus">Connecting to model API</b><small id="apiSub">Checking backend…</small></div></div><p>Forecast estimates are research outputs, not official public-health alerts.</p></div>
     </aside>
     <main id="top">

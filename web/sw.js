@@ -1,8 +1,8 @@
-const VERSION = 'dw-onsite-v2';
+const VERSION = 'dw-onsite-v3';
 const SHELL = [
   '/', '/index.html', '/future.html', '/manifest.webmanifest',
-  '/assets/css/dashboard.css', '/assets/css/riskmap.css', '/assets/css/accuracy.css', '/assets/css/chatbot.css', '/assets/css/mobile.css',
-  '/assets/js/dashboard.js', '/assets/js/riskmap.js', '/assets/js/accuracy.js', '/assets/js/accuracy-data.js', '/assets/js/chatbot.js', '/assets/js/mobile.js',
+  '/assets/css/dashboard.css', '/assets/css/riskmap.css', '/assets/css/accuracy.css', '/assets/css/chatbot.css', '/assets/css/mobile.css', '/assets/css/forest.css', '/assets/css/intro.css',
+  '/assets/js/dashboard.js', '/assets/js/riskmap.js', '/assets/js/accuracy.js', '/assets/js/accuracy-data.js', '/assets/js/chatbot.js', '/assets/js/mobile.js', '/assets/js/intro.js',
   '/assets/img/logo.png', '/assets/img/favicon.png', '/assets/fonts/fonts.css',
   '/assets/fonts/dm-sans-latin-400.woff2', '/assets/fonts/dm-sans-latin-500.woff2', '/assets/fonts/dm-sans-latin-600.woff2', '/assets/fonts/dm-sans-latin-700.woff2',
   '/assets/fonts/manrope-latin-500.woff2', '/assets/fonts/manrope-latin-600.woff2', '/assets/fonts/manrope-latin-700.woff2', '/assets/fonts/manrope-latin-800.woff2',
