@@ -1,61 +1,61 @@
 ﻿priority_rank,ward_id,city,risk,predicted_cases,density,saline_required,saline_allocated,kits_required,kits_allocated,beds_required,beds_allocated,fulfilment_pct,deficit_level,crews_needed,crews_assigned,spray_sequence,what_got_cut
-1,DSCC_Ward_04,Dhaka South,Critical,9.79,74252,23,23,11,11,3,3,100.0,OK,4,4,1,
-2,DNCC_Ward_12,Dhaka North,Critical,9.49,72086,23,23,11,11,3,3,100.0,OK,4,4,2,
-3,CCC_Ward_01,Chattogram,Critical,9.56,64024,23,23,11,11,3,3,100.0,OK,4,4,3,
-4,CCC_Ward_03,Chattogram,Critical,9.12,64626,22,22,11,11,3,3,100.0,OK,4,4,4,
-5,NCC_Ward_01,Narayanganj,High,8.61,65612,21,21,10,10,3,3,100.0,OK,3,3,5,
-6,DNCC_Ward_18,Dhaka North,High,8.27,62182,20,20,10,10,2,2,100.0,OK,3,3,6,
-7,DSCC_Ward_06,Dhaka South,High,7.48,59553,18,18,9,9,2,2,100.0,OK,3,3,7,
-8,DNCC_Ward_09,Dhaka North,High,8.59,43995,20,20,10,10,3,3,100.0,OK,3,3,8,
-9,GCC_Ward_01,Gazipur,High,6.67,69771,16,16,8,8,2,2,100.0,OK,3,3,9,
-10,DSCC_Ward_19,Dhaka South,High,7.57,54104,18,18,9,9,2,2,100.0,OK,3,3,10,
-11,DSCC_Ward_10,Dhaka South,High,7.52,54340,18,18,9,9,2,2,100.0,OK,3,3,11,
-12,GCC_Ward_03,Gazipur,High,7.23,56311,17,17,8,8,2,2,100.0,OK,3,3,12,
-13,DNCC_Ward_19,Dhaka North,High,7.49,52080,18,18,9,9,2,2,100.0,OK,3,0,13,Spraying crews -3 (priority rank 13 of 60)
-14,GCC_Ward_02,Gazipur,High,8.0,45898,19,19,9,9,2,2,100.0,OK,3,0,14,Spraying crews -3 (priority rank 14 of 60)
-15,GCC_Ward_05,Gazipur,High,7.28,54111,17,17,8,8,2,2,100.0,OK,3,0,15,Spraying crews -3 (priority rank 15 of 60)
-16,DNCC_Ward_01,Dhaka North,High,8.19,39348,20,20,10,10,2,2,100.0,OK,2,0,16,Spraying crews -2 (priority rank 16 of 60)
-17,DNCC_Ward_05,Dhaka North,High,6.24,65449,15,15,7,7,2,2,100.0,OK,3,0,17,Spraying crews -3 (priority rank 17 of 60)
-18,CCC_Ward_07,Chattogram,High,8.13,38726,19,19,9,9,2,2,100.0,OK,2,0,18,Spraying crews -2 (priority rank 18 of 60)
-19,DNCC_Ward_10,Dhaka North,High,7.12,47311,17,17,8,8,2,2,100.0,OK,3,0,19,Spraying crews -3 (priority rank 19 of 60)
-20,DSCC_Ward_08,Dhaka South,High,6.61,53527,16,16,8,8,2,2,100.0,OK,3,0,20,Spraying crews -3 (priority rank 20 of 60)
-21,DSCC_Ward_12,Dhaka South,High,6.73,49992,16,16,8,8,2,2,100.0,OK,3,0,21,Spraying crews -3 (priority rank 21 of 60)
-22,DSCC_Ward_13,Dhaka South,High,6.82,47795,16,16,8,8,2,2,100.0,OK,3,0,22,Spraying crews -3 (priority rank 22 of 60)
-23,GCC_Ward_04,Gazipur,High,5.83,59508,14,14,7,7,2,2,100.0,OK,3,0,23,Spraying crews -3 (priority rank 23 of 60)
-24,DNCC_Ward_16,Dhaka North,High,5.86,55763,14,14,7,7,2,2,100.0,OK,3,0,24,Spraying crews -3 (priority rank 24 of 60)
-25,NCC_Ward_05,Narayanganj,High,6.99,40043,17,17,8,8,2,2,100.0,OK,2,0,25,Spraying crews -2 (priority rank 25 of 60)
-26,DNCC_Ward_11,Dhaka North,High,5.8,52630,14,14,7,7,2,2,100.0,OK,3,0,26,Spraying crews -3 (priority rank 26 of 60)
-27,CCC_Ward_04,Chattogram,High,6.1,47112,15,15,7,7,2,2,100.0,OK,3,0,27,Spraying crews -3 (priority rank 27 of 60)
-28,DNCC_Ward_02,Dhaka North,High,5.55,52123,13,13,6,6,2,2,100.0,OK,3,0,28,Spraying crews -3 (priority rank 28 of 60)
-29,DSCC_Ward_20,Dhaka South,High,7.27,28634,17,17,8,8,2,2,100.0,OK,2,0,29,Spraying crews -2 (priority rank 29 of 60)
-30,DNCC_Ward_07,Dhaka North,High,5.66,42620,13,13,7,7,2,2,100.0,OK,2,0,30,Spraying crews -2 (priority rank 30 of 60)
-31,CCC_Ward_10,Chattogram,High,5.23,46652,12,12,6,6,2,2,100.0,OK,3,0,31,Spraying crews -3 (priority rank 31 of 60)
-32,CCC_Ward_08,Chattogram,High,6.32,32351,15,15,7,7,2,2,100.0,OK,2,0,32,Spraying crews -2 (priority rank 32 of 60)
-33,CCC_Ward_06,Chattogram,High,5.9,36422,14,14,7,7,2,2,100.0,OK,2,0,33,Spraying crews -2 (priority rank 33 of 60)
-34,DSCC_Ward_18,Dhaka South,High,6.61,27189,16,16,8,8,2,2,100.0,OK,2,0,34,Spraying crews -2 (priority rank 34 of 60)
-35,DSCC_Ward_03,Dhaka South,High,6.57,26032,16,16,8,8,2,2,100.0,OK,2,0,35,Spraying crews -2 (priority rank 35 of 60)
-36,DSCC_Ward_01,Dhaka South,High,5.18,40154,12,12,6,6,2,2,100.0,OK,2,0,36,Spraying crews -2 (priority rank 36 of 60)
-37,DSCC_Ward_15,Dhaka South,High,5.08,35918,12,12,6,6,2,2,100.0,OK,2,0,37,Spraying crews -2 (priority rank 37 of 60)
-38,DSCC_Ward_16,Dhaka South,High,5.02,32209,12,12,6,6,1,1,100.0,OK,2,0,38,Spraying crews -2 (priority rank 38 of 60)
-39,DSCC_Ward_05,Dhaka South,High,6.81,18314,16,16,8,8,2,2,100.0,OK,2,0,39,Spraying crews -2 (priority rank 39 of 60)
-40,DNCC_Ward_15,Dhaka North,High,6.34,19960,15,15,7,7,2,2,100.0,OK,2,0,40,Spraying crews -2 (priority rank 40 of 60)
-41,DNCC_Ward_03,Dhaka North,High,5.9,21310,14,14,7,7,2,2,100.0,OK,2,0,41,Spraying crews -2 (priority rank 41 of 60)
-42,DSCC_Ward_11,Dhaka South,High,5.22,24816,12,12,6,6,2,2,100.0,OK,2,0,42,Spraying crews -2 (priority rank 42 of 60)
-43,DNCC_Ward_04,Dhaka North,Medium,4.73,58360,11,11,6,6,1,1,100.0,OK,2,0,44,Spraying crews -2 (priority rank 43 of 60)
-44,NCC_Ward_03,Narayanganj,High,5.19,18945,12,12,6,6,2,2,100.0,OK,2,0,43,Spraying crews -2 (priority rank 44 of 60)
-45,NCC_Ward_04,Narayanganj,Medium,4.4,54774,10,10,5,5,1,1,100.0,OK,2,0,45,Spraying crews -2 (priority rank 45 of 60)
-46,DNCC_Ward_17,Dhaka North,Medium,4.53,49162,11,11,5,5,1,1,100.0,OK,2,0,46,Spraying crews -2 (priority rank 46 of 60)
-47,DNCC_Ward_14,Dhaka North,Medium,4.72,43088,11,11,5,5,1,1,100.0,OK,2,0,47,Spraying crews -2 (priority rank 47 of 60)
-48,DSCC_Ward_02,Dhaka South,Medium,4.69,38334,11,10,5,3,1,1,60.0,WARNING,1,0,48,"Saline bags -1, Diagnostic kits -2, Spraying crews -1 (priority rank 48 of 60)"
-49,DNCC_Ward_13,Dhaka North,Medium,4.7,35362,11,0,5,0,1,1,0.0,CRITICAL,1,0,49,"Saline bags -11, Diagnostic kits -5, Spraying crews -1 (priority rank 49 of 60)"
-50,DNCC_Ward_20,Dhaka North,Medium,4.99,29171,12,0,6,0,1,0,0.0,CRITICAL,1,0,50,"Saline bags -12, Diagnostic kits -6, Hospital beds -1, Spraying crews -1 (priority rank 50 of 60)"
-51,DSCC_Ward_07,Dhaka South,Medium,4.23,38432,10,0,5,0,1,0,0.0,CRITICAL,1,0,51,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 51 of 60)"
-52,DSCC_Ward_09,Dhaka South,Medium,4.27,35725,10,0,5,0,1,0,0.0,CRITICAL,1,0,52,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 52 of 60)"
-53,DNCC_Ward_06,Dhaka North,Medium,4.77,28454,11,0,6,0,1,0,0.0,CRITICAL,1,0,53,"Saline bags -11, Diagnostic kits -6, Hospital beds -1, Spraying crews -1 (priority rank 53 of 60)"
-54,DSCC_Ward_17,Dhaka South,Medium,4.52,31041,11,0,5,0,1,0,0.0,CRITICAL,1,0,54,"Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 54 of 60)"
-55,CCC_Ward_09,Chattogram,Medium,4.19,34235,10,0,5,0,1,0,0.0,CRITICAL,1,0,55,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 55 of 60)"
-56,DNCC_Ward_08,Dhaka North,Medium,4.66,25951,11,0,5,0,1,0,0.0,CRITICAL,1,0,56,"Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 56 of 60)"
-57,CCC_Ward_05,Chattogram,Medium,4.36,24832,10,0,5,0,1,0,0.0,CRITICAL,1,0,57,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 57 of 60)"
-58,CCC_Ward_02,Chattogram,Medium,4.27,24272,10,0,5,0,1,0,0.0,CRITICAL,1,0,58,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 58 of 60)"
-59,NCC_Ward_02,Narayanganj,Medium,4.49,20324,11,0,5,0,1,0,0.0,CRITICAL,1,0,59,"Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 59 of 60)"
-60,DSCC_Ward_14,Dhaka South,Medium,3.95,24149,9,0,5,0,1,0,0.0,CRITICAL,1,0,60,"Saline bags -9, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 60 of 60)"
+1,DSCC_Ward_04,Dhaka South,Critical,20.44,74252,49,30,24,15,6,4,61.2,WARNING,4,4,1,"Saline bags -19, Diagnostic kits -9, Hospital beds -2 (priority rank 1 of 60)"
+2,DNCC_Ward_12,Dhaka North,Critical,20.12,72086,48,29,23,14,6,4,60.4,WARNING,4,4,2,"Saline bags -19, Diagnostic kits -9, Hospital beds -2 (priority rank 2 of 60)"
+3,CCC_Ward_03,Chattogram,Critical,20.75,64626,49,30,24,15,6,4,61.2,WARNING,4,4,3,"Saline bags -19, Diagnostic kits -9, Hospital beds -2 (priority rank 3 of 60)"
+4,DSCC_Ward_06,Dhaka South,Critical,19.8,59553,47,29,23,14,6,4,60.9,WARNING,4,4,4,"Saline bags -18, Diagnostic kits -9, Hospital beds -2 (priority rank 4 of 60)"
+5,CCC_Ward_01,Chattogram,Critical,18.32,64024,44,27,21,13,5,3,60.0,WARNING,4,4,5,"Saline bags -17, Diagnostic kits -8, Hospital beds -2 (priority rank 5 of 60)"
+6,DNCC_Ward_18,Dhaka North,Critical,18.03,62182,43,26,21,13,5,3,60.0,WARNING,4,4,6,"Saline bags -17, Diagnostic kits -8, Hospital beds -2 (priority rank 6 of 60)"
+7,DSCC_Ward_10,Dhaka South,Critical,18.8,54340,45,27,22,14,6,4,60.0,WARNING,4,4,7,"Saline bags -18, Diagnostic kits -8, Hospital beds -2 (priority rank 7 of 60)"
+8,GCC_Ward_03,Gazipur,Critical,18.0,56311,43,26,21,13,5,3,60.0,WARNING,4,4,8,"Saline bags -17, Diagnostic kits -8, Hospital beds -2 (priority rank 8 of 60)"
+9,DSCC_Ward_19,Dhaka South,Critical,18.21,54104,43,26,21,13,5,3,60.0,WARNING,4,4,9,"Saline bags -17, Diagnostic kits -8, Hospital beds -2 (priority rank 9 of 60)"
+10,DSCC_Ward_12,Dhaka South,Critical,18.76,49992,45,27,22,14,6,4,60.0,WARNING,4,4,10,"Saline bags -18, Diagnostic kits -8, Hospital beds -2 (priority rank 10 of 60)"
+11,GCC_Ward_02,Gazipur,Critical,19.55,45898,47,29,23,14,6,4,60.9,WARNING,4,0,11,"Saline bags -18, Diagnostic kits -9, Hospital beds -2, Spraying crews -4 (priority rank 11 of 60)"
+12,DNCC_Ward_19,Dhaka North,Critical,18.3,52080,44,27,21,13,5,3,60.0,WARNING,4,0,12,"Saline bags -17, Diagnostic kits -8, Hospital beds -2, Spraying crews -4 (priority rank 12 of 60)"
+13,GCC_Ward_01,Gazipur,Critical,15.37,69771,37,23,18,11,5,3,60.0,WARNING,4,0,13,"Saline bags -14, Diagnostic kits -7, Hospital beds -2, Spraying crews -4 (priority rank 13 of 60)"
+14,NCC_Ward_01,Narayanganj,Critical,15.3,65612,36,22,18,11,5,3,60.0,WARNING,4,0,14,"Saline bags -14, Diagnostic kits -7, Hospital beds -2, Spraying crews -4 (priority rank 14 of 60)"
+15,DNCC_Ward_09,Dhaka North,Critical,18.71,43995,45,27,22,14,6,4,60.0,WARNING,4,0,15,"Saline bags -18, Diagnostic kits -8, Hospital beds -2, Spraying crews -4 (priority rank 15 of 60)"
+16,GCC_Ward_05,Gazipur,Critical,16.37,54111,39,24,19,12,5,3,60.0,WARNING,4,0,16,"Saline bags -15, Diagnostic kits -7, Hospital beds -2, Spraying crews -4 (priority rank 16 of 60)"
+17,DNCC_Ward_05,Dhaka North,Critical,14.83,65449,35,21,17,11,4,3,60.0,WARNING,4,0,17,"Saline bags -14, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 17 of 60)"
+18,NCC_Ward_05,Narayanganj,Critical,18.17,40043,43,26,21,13,5,3,60.0,WARNING,3,0,18,"Saline bags -17, Diagnostic kits -8, Hospital beds -2, Spraying crews -3 (priority rank 18 of 60)"
+19,DNCC_Ward_01,Dhaka North,Critical,17.63,39348,42,26,21,13,5,3,60.0,WARNING,3,0,19,"Saline bags -16, Diagnostic kits -8, Hospital beds -2, Spraying crews -3 (priority rank 19 of 60)"
+20,DNCC_Ward_10,Dhaka North,Critical,15.81,47311,38,23,18,11,5,3,60.0,WARNING,4,0,20,"Saline bags -15, Diagnostic kits -7, Hospital beds -2, Spraying crews -4 (priority rank 20 of 60)"
+21,GCC_Ward_04,Gazipur,Critical,13.68,59508,33,20,16,10,4,3,60.6,WARNING,4,0,21,"Saline bags -13, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 21 of 60)"
+22,CCC_Ward_07,Chattogram,Critical,16.85,38726,40,24,20,12,5,3,60.0,WARNING,3,0,22,"Saline bags -16, Diagnostic kits -8, Hospital beds -2, Spraying crews -3 (priority rank 22 of 60)"
+23,DSCC_Ward_13,Dhaka South,Critical,14.84,47795,35,21,17,11,4,3,60.0,WARNING,4,0,23,"Saline bags -14, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 23 of 60)"
+24,CCC_Ward_04,Chattogram,Critical,14.62,47112,35,21,17,11,4,3,60.0,WARNING,4,0,24,"Saline bags -14, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 24 of 60)"
+25,DNCC_Ward_16,Dhaka North,Critical,13.07,55763,31,19,15,9,4,3,60.0,WARNING,4,0,25,"Saline bags -12, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 25 of 60)"
+26,DSCC_Ward_08,Dhaka South,Critical,12.86,53527,31,19,15,9,4,3,60.0,WARNING,4,0,26,"Saline bags -12, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 26 of 60)"
+27,DNCC_Ward_11,Dhaka North,Critical,12.93,52630,31,19,15,9,4,3,60.0,WARNING,4,0,27,"Saline bags -12, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 27 of 60)"
+28,DNCC_Ward_02,Dhaka North,Critical,12.76,52123,30,18,15,9,4,3,60.0,WARNING,4,0,28,"Saline bags -12, Diagnostic kits -6, Hospital beds -1, Spraying crews -4 (priority rank 28 of 60)"
+29,DNCC_Ward_07,Dhaka North,Critical,12.98,42620,31,19,15,9,4,3,60.0,WARNING,3,0,29,"Saline bags -12, Diagnostic kits -6, Hospital beds -1, Spraying crews -3 (priority rank 29 of 60)"
+30,NCC_Ward_04,Narayanganj,Critical,11.23,54774,27,17,13,8,3,2,61.5,WARNING,4,0,30,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -4 (priority rank 30 of 60)"
+31,DSCC_Ward_20,Dhaka South,Critical,15.68,28634,37,23,18,11,5,3,60.0,WARNING,3,0,31,"Saline bags -14, Diagnostic kits -7, Hospital beds -2, Spraying crews -3 (priority rank 31 of 60)"
+32,DSCC_Ward_03,Dhaka South,Critical,15.96,26032,38,23,19,12,5,3,60.0,WARNING,3,0,32,"Saline bags -15, Diagnostic kits -7, Hospital beds -2, Spraying crews -3 (priority rank 32 of 60)"
+33,DNCC_Ward_17,Dhaka North,Critical,11.19,49162,27,17,13,8,3,2,61.5,WARNING,4,0,33,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -4 (priority rank 33 of 60)"
+34,DNCC_Ward_04,Dhaka North,Critical,10.14,58360,24,15,12,8,3,2,62.5,WARNING,4,0,34,"Saline bags -9, Diagnostic kits -4, Hospital beds -1, Spraying crews -4 (priority rank 34 of 60)"
+35,DSCC_Ward_01,Dhaka South,Critical,11.97,40154,29,18,14,9,4,3,62.1,WARNING,3,0,35,"Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 35 of 60)"
+36,DSCC_Ward_18,Dhaka South,Critical,14.65,27189,35,21,17,11,4,3,60.0,WARNING,3,0,36,"Saline bags -14, Diagnostic kits -6, Hospital beds -1, Spraying crews -3 (priority rank 36 of 60)"
+37,CCC_Ward_06,Chattogram,Critical,12.49,36422,30,18,15,9,4,3,60.0,WARNING,3,0,37,"Saline bags -12, Diagnostic kits -6, Hospital beds -1, Spraying crews -3 (priority rank 37 of 60)"
+38,CCC_Ward_10,Chattogram,Critical,10.98,46652,26,16,13,8,3,2,61.5,WARNING,4,0,38,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -4 (priority rank 38 of 60)"
+39,DSCC_Ward_02,Dhaka South,Critical,11.59,38334,28,17,13,8,3,2,60.7,WARNING,3,0,39,"Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 39 of 60)"
+40,DNCC_Ward_14,Dhaka North,Critical,10.63,43088,25,15,12,8,3,2,60.0,WARNING,4,0,40,"Saline bags -10, Diagnostic kits -4, Hospital beds -1, Spraying crews -4 (priority rank 40 of 60)"
+41,CCC_Ward_08,Chattogram,Critical,12.25,32351,29,18,14,9,4,3,62.1,WARNING,3,0,41,"Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 41 of 60)"
+42,DNCC_Ward_15,Dhaka North,Critical,15.04,19960,36,22,18,11,4,3,61.1,WARNING,3,0,42,"Saline bags -14, Diagnostic kits -7, Hospital beds -1, Spraying crews -3 (priority rank 42 of 60)"
+43,DSCC_Ward_09,Dhaka South,Critical,11.02,35725,26,16,13,8,3,2,61.5,WARNING,3,0,43,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 43 of 60)"
+44,DNCC_Ward_03,Dhaka North,Critical,14.42,21310,34,21,17,11,4,3,61.8,WARNING,3,0,44,"Saline bags -13, Diagnostic kits -6, Hospital beds -1, Spraying crews -3 (priority rank 44 of 60)"
+45,DSCC_Ward_16,Dhaka South,Critical,11.38,32209,27,17,13,8,3,2,61.5,WARNING,3,0,45,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 45 of 60)"
+46,DSCC_Ward_15,Dhaka South,Critical,10.51,35918,25,15,12,8,3,2,60.0,WARNING,3,0,46,"Saline bags -10, Diagnostic kits -4, Hospital beds -1, Spraying crews -3 (priority rank 46 of 60)"
+47,DSCC_Ward_05,Dhaka South,Critical,14.43,18314,34,21,17,11,4,3,61.8,WARNING,2,0,47,"Saline bags -13, Diagnostic kits -6, Hospital beds -1, Spraying crews -2 (priority rank 47 of 60)"
+48,DNCC_Ward_06,Dhaka North,Critical,11.3,28454,27,17,13,8,3,2,61.5,WARNING,3,0,48,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 48 of 60)"
+49,DSCC_Ward_11,Dhaka South,Critical,11.99,24816,29,18,14,9,4,3,62.1,WARNING,3,0,49,"Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 49 of 60)"
+50,DSCC_Ward_07,Dhaka South,Critical,9.28,38432,22,14,11,7,3,2,63.6,WARNING,3,0,50,"Saline bags -8, Diagnostic kits -4, Hospital beds -1, Spraying crews -3 (priority rank 50 of 60)"
+51,DNCC_Ward_08,Dhaka North,Critical,11.32,25951,27,17,13,8,3,2,61.5,WARNING,3,0,51,"Saline bags -10, Diagnostic kits -5, Hospital beds -1, Spraying crews -3 (priority rank 51 of 60)"
+52,DNCC_Ward_13,Dhaka North,Critical,9.37,35362,22,14,11,7,3,2,63.6,WARNING,3,0,52,"Saline bags -8, Diagnostic kits -4, Hospital beds -1, Spraying crews -3 (priority rank 52 of 60)"
+53,NCC_Ward_02,Narayanganj,Critical,12.06,20324,29,18,14,9,4,1,25.0,CRITICAL,3,0,53,"Saline bags -11, Diagnostic kits -5, Hospital beds -3, Spraying crews -3 (priority rank 53 of 60)"
+54,DNCC_Ward_20,Dhaka North,Critical,9.74,29171,23,14,11,7,3,0,0.0,CRITICAL,3,0,54,"Saline bags -9, Diagnostic kits -4, Hospital beds -3, Spraying crews -3 (priority rank 54 of 60)"
+55,CCC_Ward_05,Chattogram,Critical,10.52,24832,25,15,12,8,3,0,0.0,CRITICAL,3,0,55,"Saline bags -10, Diagnostic kits -4, Hospital beds -3, Spraying crews -3 (priority rank 55 of 60)"
+56,NCC_Ward_03,Narayanganj,Critical,11.87,18945,28,17,14,9,4,0,0.0,CRITICAL,2,0,56,"Saline bags -11, Diagnostic kits -5, Hospital beds -4, Spraying crews -2 (priority rank 56 of 60)"
+57,CCC_Ward_02,Chattogram,Critical,10.29,24272,25,15,12,2,3,0,0.0,CRITICAL,3,0,57,"Saline bags -10, Diagnostic kits -10, Hospital beds -3, Spraying crews -3 (priority rank 57 of 60)"
+58,CCC_Ward_09,Chattogram,High,8.42,34235,20,8,10,0,3,0,0.0,CRITICAL,2,0,58,"Saline bags -12, Diagnostic kits -10, Hospital beds -3, Spraying crews -2 (priority rank 58 of 60)"
+59,DSCC_Ward_17,Dhaka South,High,7.76,31041,19,8,9,0,2,0,0.0,CRITICAL,2,0,59,"Saline bags -11, Diagnostic kits -9, Hospital beds -2, Spraying crews -2 (priority rank 59 of 60)"
+60,DSCC_Ward_14,Dhaka South,High,7.17,24149,17,1,8,0,2,0,0.0,CRITICAL,2,0,60,"Saline bags -16, Diagnostic kits -8, Hospital beds -2, Spraying crews -2 (priority rank 60 of 60)"

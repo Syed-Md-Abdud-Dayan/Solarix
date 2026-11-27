@@ -1,0 +1,14 @@
+# SMS primary (107 chars, GSM-7)
+DengueWatch NCC_Ward_03 Critical: 11.9 cases. Spray crews 0/2, order #56. CREW SHORTFALL! Ref DW-5FA0466B06
+
+# SMS long version (4 part(s))
+[DW-5FA0466B06] Dengue Watch dispatch - Spraying team
+Ward NCC_Ward_03 (Narayanganj), week of 2019-08-12
+Predicted cases: 11.9 (risk Critical, +/-1.04)
+Saline bags: 17/28
+Diagnostic kits: 9/14
+Hospital beds: 0/4
+Spraying crews assigned: 0/2 (sequence #56)
+DEFICIT ALERT (CRITICAL): only 0% can be supplied. Saline bags -11, Diagnostic kits -5, Hospital beds -4, Spraying crews -2 (priority rank 56 of 60)
+Transfer 2 patient(s) to NCC_Ward_01
+Reply ACK to confirm.

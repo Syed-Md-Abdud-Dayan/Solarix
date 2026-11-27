@@ -1,0 +1,17 @@
+*Dengue Watch dispatch* - Saline & kits team
+Ward: *GCC_Ward_02* (Gazipur)
+Week: 2019-08-12
+Predicted cases: *19.6* (risk *Critical*)
+
+*Supplies (allocated / required)*
+• Saline bags: 29/47 ⚠️
+• Diagnostic kits: 14/23 ⚠️
+• Hospital beds: 4/6 ⚠️
+• Spraying crews: 0/4 (order #11)
+
+⚠️ *DEFICIT ALERT (WARNING)*: 60.9% fulfilled
+
+*Hospital beds*: demand 6, capacity 5, net deficit 0
+→ Send 1 patient(s) to GCC_Ward_04
+
+_Ref DW-E81ED7302A. Reply ACK to confirm._

@@ -146,8 +146,8 @@ assigned Critical, then High, Medium, Low.
 
 ### 4.3 Overflow (Requirement 2) and the capacity ASSUMPTION
 The dataset has **no bed-capacity column**. Assumed baseline (editable in the Hospital portal,
-stored in SQLite, labelled "assumed" everywhere): a city's bed pool is the sum of its wards'
-P85 weekly bed requirement, split across the city's wards by population density (a population
+stored in SQLite, labelled "assumed" everywhere): a city's bed pool is the P99 of the city's
+weekly total bed requirement (it covers all but the worst 1% of weeks), split across the city's wards by population density (a population
 proxy). Demand also depends on water-logging, sanitation and rain, so some wards exceed capacity
 while neighbours have headroom. Routing moves one patient at a time to the same-city ward with the
 lowest utilisation after receiving (water-filling). Patients are conserved; cross-city transfers
@@ -229,7 +229,7 @@ flowchart LR
 |---|---|---|
 | Planning origin | 2025-08-04 (peak 2025) | last data week (2025-12-29) is off-season, about 1 case region-wide |
 | 100% regional stock | peak-week demand of next 4 weeks | slider then expresses real scarcity relative to need |
-| Bed capacity | city pool = sum of ward P85, split by density | dataset has no capacity column; editable |
+| Bed capacity | city pool = P99 of city weekly total, split by density | dataset has no capacity column; editable |
 | Equity floor | Critical 60%, High 40% | fairness guard before greedy fill |
 | Crew need | Critical 3, High 2, Medium 1, Low 0, x sqrt density factor, max 4 | denser wards need more teams |
 | Simulator efficacy | larvicide 0.6, fogging 0.4, coverage k = 0.6 | mid-range field values; planning parameters |

@@ -1,0 +1,17 @@
+*Dengue Watch dispatch* - Spraying team
+Ward: *DNCC_Ward_01* (Dhaka North)
+Week: 2019-08-12
+Predicted cases: *17.6* (risk *Critical*)
+
+*Supplies (allocated / required)*
+• Saline bags: 26/42 ⚠️
+• Diagnostic kits: 13/21 ⚠️
+• Hospital beds: 3/5 ⚠️
+• Spraying crews: 0/3 (order #19)
+
+⚠️ *DEFICIT ALERT (WARNING)*: 60.0% fulfilled
+
+*Hospital beds*: demand 5, capacity 4, net deficit 0
+→ Send 1 patient(s) to DNCC_Ward_04
+
+_Ref DW-AC70915134. Reply ACK to confirm._

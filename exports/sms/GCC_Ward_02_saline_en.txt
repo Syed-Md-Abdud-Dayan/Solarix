@@ -1,0 +1,14 @@
+# SMS primary (112 chars, GSM-7)
+DengueWatch GCC_Ward_02 Critical: 19.6 cases wk 2019-08-12. Saline 29/47, kits 14/23. DEFICIT! Ref DW-FEE7432D4E
+
+# SMS long version (4 part(s))
+[DW-FEE7432D4E] Dengue Watch dispatch - Saline & kits team
+Ward GCC_Ward_02 (Gazipur), week of 2019-08-12
+Predicted cases: 19.6 (risk Critical, +/-1.04)
+Saline bags: 29/47
+Diagnostic kits: 14/23
+Hospital beds: 4/6
+Spraying crews assigned: 0/4 (sequence #11)
+DEFICIT ALERT (WARNING): only 61% can be supplied. Saline bags -18, Diagnostic kits -9, Hospital beds -2, Spraying crews -4 (priority rank 11 of 60)
+Transfer 1 patient(s) to GCC_Ward_04
+Reply ACK to confirm.

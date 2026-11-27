@@ -1,13 +1,14 @@
-# SMS primary (72 chars, GSM-7)
-DengueWatch NCC_Ward_02 beds need 1, cap 1, deficit 0. Ref DW-411A55F4FF
+# SMS primary (94 chars, GSM-7)
+DengueWatch NCC_Ward_02 beds need 4, cap 2, deficit 2. Route 2->NCC_Ward_04. Ref DW-54F9A89343
 
-# SMS long version (3 part(s))
-[DW-411A55F4FF] Dengue Watch dispatch - Hospital bed team
-Ward NCC_Ward_02 (Narayanganj), week of 2025-08-11
-Predicted cases: 4.5 (risk Medium, +/-1.04)
-Saline bags: 0/11
-Diagnostic kits: 0/5
-Hospital beds: 0/1
-Spraying crews assigned: 0/1 (sequence #59)
-DEFICIT ALERT (CRITICAL): only 0% can be supplied. Saline bags -11, Diagnostic kits -5, Hospital beds -1, Spraying crews -1 (priority rank 59 of 60)
+# SMS long version (4 part(s))
+[DW-54F9A89343] Dengue Watch dispatch - Hospital bed team
+Ward NCC_Ward_02 (Narayanganj), week of 2019-08-12
+Predicted cases: 12.1 (risk Critical, +/-1.04)
+Saline bags: 18/29
+Diagnostic kits: 9/14
+Hospital beds: 1/4
+Spraying crews assigned: 0/3 (sequence #53)
+DEFICIT ALERT (CRITICAL): only 25% can be supplied. Saline bags -11, Diagnostic kits -5, Hospital beds -3, Spraying crews -3 (priority rank 53 of 60)
+Transfer 2 patient(s) to NCC_Ward_04
 Reply ACK to confirm.

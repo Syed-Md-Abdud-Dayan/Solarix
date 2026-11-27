@@ -97,8 +97,8 @@ briefs" bundle, EN / বাংলা toggle, mobile layout for field teams, inst
   (`python scripts/verify_onsite_dataset.py`).
 - **Allocation**: priority = risk weight x (cases + 0.5) x sqrt(density / median); equity floor for Critical / High, then greedy
   fill (optimal for this equal-cost problem). 100% stock = peak-week demand of the next 4 weeks.
-- **Overflow**: bed capacity is an **assumed, editable baseline** (the dataset has none): city pool = sum of ward P85 weekly bed
-  requirement, split by population density. Patients go to the lowest-utilisation ward in the same city.
+- **Overflow**: bed capacity is an **assumed, editable baseline** (the dataset has none): city pool = P99 of the city's weekly
+  total bed requirement (covers all but the worst 1% of weeks), split by population density. Patients go to the lowest-utilisation ward in the same city.
 - **Simulator**: crews raise coverage, which scales the ward's recent breeding-rainfall and transmission inputs; the
   2/3/4-week ML models are re-run on those inputs.
 - Full details and assumptions: [ARCHITECTURE.md](ARCHITECTURE.md#phase-2-onsite-final-operations-command-system), [docs/OFFLINE.md](docs/OFFLINE.md),

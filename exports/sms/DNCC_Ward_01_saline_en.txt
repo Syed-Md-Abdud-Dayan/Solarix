@@ -1,0 +1,14 @@
+# SMS primary (113 chars, GSM-7)
+DengueWatch DNCC_Ward_01 Critical: 17.6 cases wk 2019-08-12. Saline 26/42, kits 13/21. DEFICIT! Ref DW-4416AC4E35
+
+# SMS long version (4 part(s))
+[DW-4416AC4E35] Dengue Watch dispatch - Saline & kits team
+Ward DNCC_Ward_01 (Dhaka North), week of 2019-08-12
+Predicted cases: 17.6 (risk Critical, +/-1.04)
+Saline bags: 26/42
+Diagnostic kits: 13/21
+Hospital beds: 3/5
+Spraying crews assigned: 0/3 (sequence #19)
+DEFICIT ALERT (WARNING): only 60% can be supplied. Saline bags -16, Diagnostic kits -8, Hospital beds -2, Spraying crews -3 (priority rank 19 of 60)
+Transfer 1 patient(s) to DNCC_Ward_04
+Reply ACK to confirm.

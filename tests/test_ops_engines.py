@@ -147,10 +147,19 @@ def test_overflow_prefers_lowest_burden():
 def test_pooled_capacity_sums_to_pool():
     wards = [{"ward_id": f"W{i}", "city": "Q", "population_density_sqkm": 10000 * (i + 1), "history_beds": [0, 1, 2, 3] * 10}
              for i in range(4)]
-    caps = O.pooled_capacities(wards, 85)
-    pool = sum(O.baseline_capacity(w["history_beds"], 85) for w in wards)
+    caps = O.pooled_capacities(wards, 99)
+    weekly_total = [sum(week) for week in zip(*(w["history_beds"] for w in wards))]
+    pool = O.baseline_capacity(weekly_total, 99)
+    assert pool == 12   # all four wards peak together: 4 x 3 beds
     assert sum(caps.values()) == pool
     assert caps["W3"] >= caps["W0"]
+
+
+def test_pooled_capacity_rejects_misaligned_history():
+    wards = [{"ward_id": "A", "city": "Q", "population_density_sqkm": 1, "history_beds": [1, 2]},
+             {"ward_id": "B", "city": "Q", "population_density_sqkm": 1, "history_beds": [1]}]
+    with pytest.raises(ValueError):
+        O.pooled_capacities(wards)
 
 
 # ----------------------------------------------------------------- model-backed (bridge / simulator)
