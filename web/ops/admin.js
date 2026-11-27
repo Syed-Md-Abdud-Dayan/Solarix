@@ -113,7 +113,7 @@
     try { const r = await DW.api('/api/ops/plan/generate', { method: 'POST', body: {} }); $('#genOut').textContent = `Week ${r.week}: ${r.created} new tasks, ${r.updated} updated (idempotent), ${r.notices} notices queued · source ${r.source}`; loadOps(); }
     catch (e) { $('#genOut').textContent = e.offline ? 'Offline - plan generation needs the local server. Cached plan still shown.' : e.message; }
   };
-  $('#retry').onclick = async () => { try { const r = await DW.api('/api/ops/notify/retry', { method: 'POST', body: {} }); DW.toast(r.note || `Sent ${r.sent}, still queued ${r.still_queued}`); loadOps(); } catch (e) { DW.toast(e.message); } };
+  $('#retry').onclick = async () => { try { const r = await DW.api('/api/ops/notify/retry', { method: 'POST', body: {} }); DW.toast(r.note || `Sent ${r.sent}, failed ${r.failed || 0}, still queued ${r.still_queued}`); loadOps(); } catch (e) { DW.toast(e.message); } };
 
   // ---------------- audit
   async function loadAudit() {

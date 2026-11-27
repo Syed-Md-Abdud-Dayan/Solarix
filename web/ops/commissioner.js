@@ -112,7 +112,7 @@
     try { const r = await DW.api('/api/ops/plan/generate', { method: 'POST', body: me.role === 'super_admin' ? { ward_ids: [ward] } : {} }); DW.toast(`Plan for week ${r.week}: ${r.created} new, ${r.updated} updated tasks; ${r.notices} notices queued`); render(); }
     catch (e) { DW.toast(e.offline ? 'Offline: plan generation needs the local server' : e.message); }
   };
-  $('#send').onclick = async () => { try { const r = await DW.api('/api/ops/notify/retry', { method: 'POST', body: {} }); DW.toast(r.note || `Sent ${r.sent}, queued ${r.still_queued}`); } catch (e) { DW.toast(e.message); } };
+  $('#send').onclick = async () => { try { const r = await DW.api('/api/ops/notify/retry', { method: 'POST', body: {} }); DW.toast(r.note || `Sent ${r.sent}, failed ${r.failed || 0}, queued ${r.still_queued}`); } catch (e) { DW.toast(e.message); } };
   $('#nGo').onclick = async () => {
     try { await DW.api('/api/ops/tasks', { method: 'POST', body: { ward_id: ward, type: $('#nType').value, assigned_team: $('#nTeam').value, description: $('#nDesc').value } }); $('#nDesc').value = ''; DW.toast('Task created and team notified'); renderTasks(); }
     catch (e) { DW.toast(e.message); }

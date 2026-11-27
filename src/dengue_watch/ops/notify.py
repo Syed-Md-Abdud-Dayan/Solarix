@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import socket
 from pathlib import Path
 
@@ -57,6 +58,29 @@ def sms_target(phone: str | None) -> str | None:
     if phone.startswith("01") and len(phone) == 11:      # local Bangladesh format -> E.164
         phone = "+88" + phone
     return phone
+
+
+def _smsgate_local() -> bool:
+    """SMSGATE_URL points at the phone on the LAN: no internet needed to send."""
+    if not (_smsgate() and os.getenv("SMSGATE_URL")):
+        return False
+    import ipaddress
+    from urllib.parse import urlparse
+    host = (urlparse(os.getenv("SMSGATE_URL")).hostname or "").lower()
+    if host == "localhost" or host.endswith(".local"):
+        return True
+    try:
+        return ipaddress.ip_address(host).is_private
+    except ValueError:
+        return False
+
+
+def _permanent(err: str) -> bool:
+    """Errors a retry cannot fix (bad number, auth, bad request). 408/429 and 5xx are retried."""
+    if err.startswith("placeholder"):
+        return True
+    m = re.match(r"HTTPError: HTTP Error (\d{3})", err)
+    return bool(m) and 400 <= int(m.group(1)) < 500 and int(m.group(1)) not in (408, 429)
 
 
 def live_adapters() -> list[str]:
@@ -194,21 +218,32 @@ def retry_queued(limit: int = 200) -> dict:
                         "and are already delivered in-app and written to exports/runtime/."}
     is_online = online()
     if not is_online:
-        return {"attempted": 0, "sent": 0, "still_queued": len(rows), "online": False,
-                "note": "Offline: messages kept in the outbox; in-app delivery already done. Retry when back online."}
-    sent, sms_left = 0, int(os.getenv("SMS_MAX_PER_RUN", "20"))
+        if not _smsgate_local():
+            return {"attempted": 0, "sent": 0, "still_queued": len(rows), "online": False,
+                    "note": "Offline: messages kept in the outbox; in-app delivery already done. Retry when back online."}
+        adapters = ["sms"]         # no internet, but the phone gateway is reachable on the LAN
+    sent, failed, attempted, sms_left = 0, 0, 0, int(os.getenv("SMS_MAX_PER_RUN", "20"))
     for r in rows:
         if r["channel"] not in adapters:
             continue
-        if r["channel"] == "sms":
+        if r["channel"] == "sms" and (_smsgate() or _twilio()):
+            if not sms_target(r["phone"]):     # demo placeholder: drop it without using the budget
+                db.x("UPDATE outbox SET status='failed', error=? WHERE id=?",
+                     ("placeholder or missing phone number: set SMS_TEST_TO or a real number", r["id"]))
+                failed += 1
+                continue
             if sms_left <= 0:      # protect a personal SIM from bulk sends / carrier blocking
                 continue
             sms_left -= 1
         ok, err = _send_live(r)
+        attempted += 1
+        status = "sent" if ok else ("failed" if _permanent(err) else "queued")
         db.x("UPDATE outbox SET status=?, error=?, attempts=attempts+1, sent_at=? WHERE id=?",
-             ("sent" if ok else "queued", err, db.now() if ok else None, r["id"]))
+             (status, err, db.now() if ok else None, r["id"]))
         sent += ok
-    return {"attempted": len(rows), "sent": sent, "still_queued": len(rows) - sent, "online": True}
+        failed += status == "failed"
+    return {"attempted": attempted, "sent": sent, "failed": failed,
+            "still_queued": len(rows) - sent - failed, "online": is_online}
 
 
 def status_counts() -> dict:

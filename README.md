@@ -137,7 +137,7 @@ and written to `exports/runtime/`.
 | WhatsApp Cloud API | `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID` |
 | SMS from your own SIM ([SMS Gateway for Android](https://sms-gate.app)) | `SMSGATE_USER`, `SMSGATE_PASSWORD`, optional `SMSGATE_URL` (phone's local `http://<ip>:8080/message`; default is the app's cloud relay) |
 | SMS via Twilio | `TWILIO_SID`, `TWILIO_TOKEN`, `TWILIO_FROM` |
-| SMS safety | `SMS_TEST_TO` (send every SMS to this one number), `SMS_MAX_PER_RUN` (default 20). Demo placeholder numbers `+8801700000xxx` are never texted. |
+| SMS safety | `SMS_TEST_TO` (send every SMS to this one number), `SMS_MAX_PER_RUN` (default 20). Demo placeholder numbers `+8801700000xxx` are never texted (marked `failed`, not counted against the cap). Permanent errors (4xx except 408/429) are marked `failed`; network errors and 5xx stay queued. A LAN `SMSGATE_URL` (private IP) sends even with no internet. |
 | Telegram ops group (mirror) | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` |
 | Email ops mailbox (mirror) | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_TO` |
 | Other | `OPS_DB` (SQLite path, default `data/ops.db`), `OPS_ORIGIN` (default planning week), `OPS_FORCE_FALLBACK=1` |
