@@ -1,0 +1,14 @@
+{
+  "name": "Dengue Watch Operations",
+  "short_name": "Dengue Watch",
+  "description": "Ward-level dengue forecasting, resource allocation and dispatch - works offline.",
+  "start_url": "/ops/login.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#071b2c",
+  "theme_color": "#071b2c",
+  "icons": [
+    {"src": "/assets/img/logo.png", "sizes": "256x256", "type": "image/png", "purpose": "any"},
+    {"src": "/assets/img/favicon.png", "sizes": "64x64", "type": "image/png"}
+  ]
+}
