@@ -24,7 +24,7 @@ from . import config as C
 
 
 def baseline_capacity(history_beds: list[float], percentile: float = C.CAPACITY_PERCENTILE) -> int:
-    """ASSUMED baseline beds for a ward = ceil(P_q of its historical weekly bed requirement)."""
+    """ceil(P_q) of a weekly bed-demand series (used on a city's weekly totals), min MIN_WARD_BEDS."""
     vals = sorted(float(v) for v in history_beds)
     if not vals:
         return C.MIN_WARD_BEDS
@@ -35,15 +35,21 @@ def baseline_capacity(history_beds: list[float], percentile: float = C.CAPACITY_
 
 
 def pooled_capacities(wards: list[dict], percentile: float = C.CAPACITY_PERCENTILE) -> dict:
-    """ASSUMED capacity: city pool of per-ward P_q baselines, split by population density.
+    """ASSUMED capacity: city pool = ceil(P_q of the city's weekly TOTAL bed demand),
+    split across the city's wards by population density.
 
     wards: [{ward_id, city, population_density_sqkm, history_beds: [..]}] -> {ward_id: beds}
+    history_beds must be aligned by week (same weeks, same order) within a city.
     Largest-remainder rounding keeps sum(capacity) == city pool exactly.
     """
     out = {}
     for city in sorted({w["city"] for w in wards}):
         g = sorted([w for w in wards if w["city"] == city], key=lambda w: w["ward_id"])
-        pool = sum(baseline_capacity(w["history_beds"], percentile) for w in g)
+        lengths = {len(w["history_beds"]) for w in g}
+        if len(lengths) != 1:
+            raise ValueError(f"{city}: ward bed histories are not aligned by week")
+        weekly_total = [sum(week) for week in zip(*(w["history_beds"] for w in g))]
+        pool = baseline_capacity(weekly_total, percentile)
         dens = sum(float(w["population_density_sqkm"]) for w in g) or 1.0
         share = {w["ward_id"]: pool * float(w["population_density_sqkm"]) / dens for w in g}
         base = {k: int(math.floor(v)) for k, v in share.items()}
@@ -121,5 +127,5 @@ def route(wards: list[dict]) -> dict:
 
 
 CAPACITY_NOTE = ("Assumed baseline capacity, editable: the dataset has no bed-capacity column, so each city's bed pool = "
-                 "sum of its wards' P%d historical weekly bed requirement, split across wards by population density. "
+                 "P%d of the city's historical weekly total bed requirement, split across wards by population density. "
                  "Hospital users can overwrite it with real numbers. It is not real hospital data." % C.CAPACITY_PERCENTILE)

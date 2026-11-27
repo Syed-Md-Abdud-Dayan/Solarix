@@ -84,14 +84,15 @@ DEFAULT_TOTAL_CREWS = 60
 # 5. Hospital bed capacity (ASSUMPTION - the dataset has no capacity column)
 # ---------------------------------------------------------------------------
 # The dataset has no bed-capacity column, so capacity is an explicit, editable ASSUMPTION:
-#   city_pool(c)  = sum over wards in c of ceil(P{CAPACITY_PERCENTILE} of the ward's own
-#                   historical weekly hospital_beds_required)   (a "normal busy week" level)
+#   city_pool(c)  = ceil(P{CAPACITY_PERCENTILE} of city c's historical weekly TOTAL
+#                   hospital_beds_required)   ("the city's hospitals cover all but the
+#                   worst 1% of weeks"; P100 would make a city surge impossible)
 #   capacity(w)   = city_pool(c) split across the city's wards in proportion to
 #                   population_density_sqkm (population proxy), largest-remainder rounding.
 # So capacity follows population, while demand follows population AND local transmission
 # (water-logging, sanitation, rainfall) - which is exactly what creates intra-city imbalance.
 # Stored in the DB and editable by hospital users / super admin. Not real hospital data.
-CAPACITY_PERCENTILE = 85
+CAPACITY_PERCENTILE = 99
 MIN_WARD_BEDS = 1
 # Overflow routing only sends patients to wards whose utilisation after receiving is
 # <= this target (keeps a small headroom margin in receivers).
