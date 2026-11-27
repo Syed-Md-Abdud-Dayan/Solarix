@@ -114,7 +114,6 @@ def new_nonce() -> str:
     return secrets.token_urlsafe(18)
 
 
-# ----------------------------------------------------------------- scoping
 def can_see_ward(user: dict, ward_id: str, ward_city: str) -> bool:
     role = user["role"]
     if role == "super_admin":

@@ -54,7 +54,6 @@ def ward_context(plan: dict, ward_id: str) -> dict:
             "transfers_in": in_t, "trend": trend}
 
 
-# ------------------------------------------------------------------ SMS / WhatsApp
 def _alloc_line(w, s, lang):
     req, got = w["required"][s], w["allocated"][s]
     if lang == "bn":
@@ -89,7 +88,6 @@ def sms(ctx: dict, team: str, lang: str = "en") -> dict:
             long.append(f"রোগী স্থানান্তর: {bn_num(t['patients'])} জন -> {t['to_ward']}")
         limit = 70
     else:
-        # the short SMS flags only the shortfall this team can act on
         flag = " DEFICIT!" if (w["deficit"]["saline_bags"] > 0 or w["deficit"]["diagnostic_kits"] > 0) else ""
         if team == "saline":
             short = (f"DengueWatch {w['ward_id']} {w['risk']}: {cases} cases wk {ctx['target_date']}. "
@@ -163,7 +161,6 @@ def deep_links(phone: str, text: str) -> dict:
     return {"whatsapp": f"https://wa.me/{digits}?text={quote(text)}", "sms": f"sms:{phone}?body={quote(text)}"}
 
 
-# ------------------------------------------------------------------ commissioner brief
 _CSS = """
 @page{size:A4;margin:14mm}
 body{font-family:'DM Sans','Noto Sans Bengali','Segoe UI',Arial,sans-serif;color:#132b3b;margin:0;font-size:12px}

@@ -1,11 +1,3 @@
-/* Dengue Watch operations UI - shared helpers.
- * - api(): fetch with session cookie + CSRF; on failure serves the last good response
- *   from localStorage and shows the "Offline mode" banner.
- * - act(): state-changing actions; if offline they are queued (idempotent key) and
- *   replayed through /api/ops/batch when the connection returns.
- * - Kill-switch demo: makes the UI behave exactly as if the server/internet were gone.
- * - EN / বাংলা toggle for all [data-i18n] labels.
- */
 (function () {
   const LS = window.localStorage;
   const DW = (window.DW = {});
@@ -17,7 +9,6 @@
   DW.badge = (v, label) => `<span class="badge ${DW.esc(v)}">${DW.esc(label ?? DW.t(v))}</span>`;
   DW.bar = (pct, big) => { const c = pct < 60 ? 'c' : pct < 100 ? 'w' : ''; return `<div class="bar ${c} ${big ? 'big-bar' : ''}"><i style="width:${Math.max(0, Math.min(100, pct))}%"></i></div>`; };
 
-  // ---------------------------------------------------------------- i18n
   const BN = {
     'Critical': 'সংকটপূর্ণ', 'High': 'উচ্চ', 'Medium': 'মাঝারি', 'Low': 'নিম্ন', 'OK': 'পর্যাপ্ত', 'WARNING': 'সতর্কতা', 'CRITICAL': 'সংকট',
     'assigned': 'বরাদ্দ', 'acknowledged': 'স্বীকৃত', 'in_progress': 'চলছে', 'done': 'সম্পন্ন', 'blocked': 'আটকে আছে', 'cancelled': 'বাতিল',
@@ -43,7 +34,6 @@
   };
   DW.toggleLang = () => { LS.setItem('dw-lang', DW.lang() === 'bn' ? 'en' : 'bn'); DW.applyI18n(); if (DW.onLang) DW.onLang(); };
 
-  // ---------------------------------------------------------------- offline plumbing
   DW.killed = () => LS.getItem('dw-killswitch') === '1';
   DW.offline = false;
   function setOffline(on) {
@@ -64,17 +54,17 @@
         body: opts.body ? JSON.stringify(opts.body) : undefined, cache: 'no-store' });
       const ct = res.headers.get('Content-Type') || '';
       const data = ct.includes('json') ? await res.json() : await res.text();
-      if (res.headers.get('X-DW-Offline') === '1') {           // served by the service worker cache
+      if (res.headers.get('X-DW-Offline') === '1') {
         if (!res.ok) throw new Error('offline');
         setOffline(true); if (data && typeof data === 'object') data.__offline = true; return data;
       }
       if (res.status === 401 && !opts.noRedirect) { location.href = '/ops/login.html?next=' + encodeURIComponent(location.pathname); throw new Error('login'); }
       if (!res.ok) { const e = new Error((data && data.error) || res.statusText); e.status = res.status; throw e; }
-      if ((opts.method || 'GET') === 'GET') { try { LS.setItem(key, JSON.stringify({ t: Date.now(), data })); } catch (e) { /* quota */ } }
+      if ((opts.method || 'GET') === 'GET') { try { LS.setItem(key, JSON.stringify({ t: Date.now(), data })); } catch (e) { } }
       setOffline(false);
       return data;
     } catch (e) {
-      if (e.status || e.message === 'login') throw e;           // real server answer, not a network problem
+      if (e.status || e.message === 'login') throw e;
       setOffline(true);
       if ((opts.method || 'GET') === 'GET') {
         const c = LS.getItem(key);
@@ -84,7 +74,6 @@
     }
   };
 
-  // queue of offline actions (replayed via /api/ops/batch with idempotency keys)
   const Q = 'dw-queue';
   DW.queue = () => JSON.parse(LS.getItem(Q) || '[]');
   function saveQueue(q) { LS.setItem(Q, JSON.stringify(q)); const b = $('#bnQueue'); if (b) { b.classList.toggle('show', q.length > 0); b.textContent = `${q.length} ${DW.t('actions queued offline - will sync automatically')}`; } }
@@ -111,7 +100,7 @@
       saveQueue([]);
       DW.toast(`Synced ${r.results.filter((x) => x.ok).length} offline action(s)`);
       if (DW.refresh) DW.refresh();
-    } catch (e) { /* still offline */ }
+    } catch (e) { }
   };
   window.addEventListener('online', () => DW.flushQueue());
   setInterval(() => DW.flushQueue(), 15000);
@@ -121,7 +110,6 @@
     t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 3200);
   };
 
-  // ---------------------------------------------------------------- layout + auth
   const NAV = {
     super_admin: [['/ops/admin.html', 'Regional command'], ['/ops/commissioner.html', 'Commissioner'], ['/ops/team.html', 'Team panel'], ['/ops/hospital.html', 'Hospital portal']],
     commissioner: [['/ops/commissioner.html', 'Commissioner']], secretary: [['/ops/commissioner.html', 'Commissioner']],
@@ -170,9 +158,7 @@
     return me;
   };
 
-  // ---------------------------------------------------------------- tiny SVG charts
   DW.lineChart = function (series, opts = {}) {
-    // series: [{x:label, y, lo, hi}]
     const W = opts.w || 520, H = opts.h || 170, P = 30;
     if (!series.length) return '';
     const maxY = Math.max(1, ...series.map((s) => s.hi ?? s.y)) * 1.1;
@@ -184,7 +170,6 @@
     return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${DW.esc(opts.label || 'chart')}"><polygon points="${band}" fill="#0c9b8322"/><path d="${line}" fill="none" stroke="#0c9b83" stroke-width="2.5"/>${pts}</svg>`;
   };
   DW.barChart = function (rows, opts = {}) {
-    // rows: [{label, value, value2?}] horizontal bars
     const W = opts.w || 560, rowH = 22, H = rows.length * rowH + 10, L = opts.left || 120;
     const max = Math.max(1e-9, ...rows.map((r) => Math.max(r.value, r.value2 || 0)));
     const bars = rows.map((r, i) => {
@@ -204,6 +189,5 @@
       <text x="60" y="58" text-anchor="middle" font-size="17" font-weight="800" fill="#132b3b">${DW.fmt(pct, 0)}%</text></svg><b style="font-size:12px">${DW.esc(label)}</b></div>`;
   };
 
-  // register the service worker (offline app shell + last API responses)
   if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 })();

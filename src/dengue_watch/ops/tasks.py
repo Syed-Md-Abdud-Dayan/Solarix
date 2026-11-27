@@ -105,7 +105,6 @@ def generate(user: dict, ward_ids: list[str] | None = None, send: bool = True) -
     if ward_ids:
         rows = [w for w in rows if w["ward_id"] in set(ward_ids)]
     rows.sort(key=lambda w: (RISK_IDX.get(w["risk"], 9), -w["priority_score"], w["ward_id"]))
-    # per-city spraying sequence (High first, then density / priority)
     city_seq: dict = {}
     for w in sorted(p["allocation"]["wards"], key=lambda w: (RISK_IDX.get(w["risk"], 9), -w["priority_score"], w["ward_id"])):
         if w["crews_needed"] > 0:
@@ -167,7 +166,7 @@ def notify_task(p: dict, task_id: int) -> int:
                              "channel": "sms", "lang": lang, "body": s["short"]}, rl)
         n += notify.enqueue({"dispatch_id": wa["dispatch_id"], "task_id": task_id, "ward_id": t["ward_id"], "team": team,
                              "channel": "whatsapp", "lang": lang, "body": wa["text"]}, rl)
-    if t["type"] == "bed_routing":   # hospital managers of the city get the bed request too
+    if t["type"] == "bed_routing":
         hs = _recipients("hospital", t["city"])
         if hs:
             s = D.sms(ctx, "bed", "en")
@@ -176,7 +175,6 @@ def notify_task(p: dict, task_id: int) -> int:
     return n
 
 
-# ----------------------------------------------------------------- queries
 def _decorate(t: dict, hours: float) -> dict:
     t = dict(t)
     t["payload"] = json.loads(t["payload"] or "{}")
@@ -298,7 +296,6 @@ def create_task(user: dict, data: dict, ward_city: dict) -> dict:
                (p["target_date"], ward, ward_city[ward], ttype, json.dumps(payload), risk, RISK_IDX.get(risk, 9) * 1000,
                 user["username"], team, ts, ts, due, data.get("note")))
     db.audit(user, "create_task", {"task_id": tid, "ward_id": ward, "type": ttype})
-    # manual task notice: plain in-app message to the team
     msg = {"dispatch_id": D.dispatch_id("manual", tid), "task_id": tid, "ward_id": ward, "team": DISPATCH_TEAM[ttype],
            "channel": "in_app", "lang": "en",
            "body": f"New task #{tid} for {ward} ({ttype}) from {user['username']}: {payload.get('description', '')}"}

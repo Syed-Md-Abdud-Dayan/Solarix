@@ -29,9 +29,9 @@ def gateway(monkeypatch):
 
 def test_sms_target_rules(monkeypatch):
     monkeypatch.delenv("SMS_TEST_TO", raising=False)
-    assert notify.sms_target("+8801700000007") is None          # demo placeholder: never texted
+    assert notify.sms_target("+8801700000007") is None
     assert notify.sms_target("") is None
-    assert notify.sms_target("01812345678") == "+8801812345678"  # local BD format -> E.164
+    assert notify.sms_target("01812345678") == "+8801812345678"
     monkeypatch.setenv("SMS_TEST_TO", "+8801999999999")
     assert notify.sms_target("+8801700000007") == "+8801999999999"
 
@@ -54,7 +54,6 @@ def test_gateway_local_url_and_placeholder_skip(gateway, monkeypatch):
     assert ok and gateway[0].full_url == "http://192.168.0.5:8080/message"
 
 
-# ------------------------------------------------------------------ retry_queued behaviour
 @pytest.fixture
 def outbox(monkeypatch):
     from dengue_watch.ops import db
@@ -75,7 +74,7 @@ def test_placeholders_do_not_use_sms_budget(gateway, outbox, monkeypatch):
     add, status = outbox
     monkeypatch.setenv("SMS_MAX_PER_RUN", "2")
     for i in range(5):
-        add(f"+880170000000{i}", i)            # demo placeholders, oldest first
+        add(f"+880170000000{i}", i)
     add("01812345678", 5)
     add("01812345679", 6)
     r = notify.retry_queued()
@@ -106,8 +105,8 @@ def test_lan_gateway_sends_without_internet(gateway, outbox, monkeypatch):
     add, status = outbox
     monkeypatch.setattr(notify, "online", lambda timeout=1.5: False)
     add("01812345678", 0)
-    monkeypatch.setenv("SMSGATE_URL", "https://api.example.com/x")      # public URL: needs internet
+    monkeypatch.setenv("SMSGATE_URL", "https://api.example.com/x")
     assert notify.retry_queued()["sent"] == 0 and gateway == []
-    monkeypatch.setenv("SMSGATE_URL", "http://192.168.0.5:8080/message")  # phone on the LAN
+    monkeypatch.setenv("SMSGATE_URL", "http://192.168.0.5:8080/message")
     r = notify.retry_queued()
     assert r["sent"] == 1 and r["online"] is False and status()["u0"][0] == "sent"

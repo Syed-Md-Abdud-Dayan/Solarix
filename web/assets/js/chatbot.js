@@ -1,4 +1,3 @@
-/* Dengue Watch chatbot UI: talks to POST /api/chat. All text is rendered with textContent (no HTML injection). */
 (function () {
   'use strict';
   const el = (s) => document.querySelector(s);
@@ -81,7 +80,7 @@
         body: JSON.stringify({ message: text, context: st.context, lang: st.lang === 'auto' ? undefined : st.lang }) });
       const j = await resp.json();
       if (!resp.ok) throw new Error(j.error || 'HTTP ' + resp.status);
-      await new Promise((r) => setTimeout(r, Math.max(0, 350 - (Date.now() - t0)))); // avoid flicker
+      await new Promise((r) => setTimeout(r, Math.max(0, 350 - (Date.now() - t0))));
       st.context = j.context || st.context;
       st.msgs.push({ who: 'bot', reply: j.reply, severity: j.severity, lang: j.lang, suggestions: j.suggestions, sources: j.sources, disclaimer: j.disclaimer });
     } catch (e) {

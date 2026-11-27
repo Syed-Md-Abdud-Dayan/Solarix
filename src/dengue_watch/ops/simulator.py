@@ -87,7 +87,7 @@ def response_curves(origin=None, horizons=C.SIM_HORIZONS, max_crews: int = C.SIM
         else:
             try:
                 pred = FB.predict_variants(origin, h, variants)
-            except Exception as exc:  # deterministic fallback, never crash
+            except Exception as exc:
                 print(f"[ops] simulator model h{h} failed ({exc}); using fallback efficacy curve")
                 pred = _fallback_curves(origin, h, ids, max_crews, static, med)
         pred["crews"] = pred.variant_id.str.rsplit("#", n=1).str[-1].astype(int)
@@ -97,7 +97,6 @@ def response_curves(origin=None, horizons=C.SIM_HORIZONS, max_crews: int = C.SIM
     base = out[out.crews.eq(0)].set_index(["ward_id", "horizon"]).predicted_cases
     out["baseline"] = [base[(w, h)] for w, h in zip(out.ward_id, out.horizon)]
     out["raw_prevented"] = out.baseline - out.predicted_cases
-    # isotonic guard: non-negative and non-decreasing in crews
     out["prevented"] = out.groupby(["ward_id", "horizon"]).raw_prevented.cummax().clip(lower=0)
     out["intervened"] = (out.baseline - out.prevented).clip(lower=0)
     _CURVE_CACHE[key] = out
@@ -109,7 +108,7 @@ def response_curves(origin=None, horizons=C.SIM_HORIZONS, max_crews: int = C.SIM
 def _fallback_curves(origin, h, ids, max_crews, static, med):
     """No-model path: seasonal baseline x the same coverage/efficacy curve (ramped by horizon)."""
     base = FB.fallback_predict(origin, h).set_index("ward_id").predicted_cases
-    ramp = min(1.0, h / max(C.SIM_HORIZONS))   # effect builds up over the weeks
+    ramp = min(1.0, h / max(C.SIM_HORIZONS))
     rows = []
     for w in ids:
         dfac = density_factor(float(static.loc[w, "population_density_sqkm"]), med)
@@ -199,7 +198,6 @@ def recommend(total_crews: int, origin=None, horizons=C.SIM_HORIZONS, wards: lis
         alloc[best] += 1
         steps.append({"step": len(steps) + 1, "ward_id": best, "crew_no": alloc[best], "marginal_cases_prevented": round(gain, 3)})
     deployment = {w: k for w, k in alloc.items() if k > 0}
-    # ROI ranking for a single crew per ward (comparable across wards)
     ranking = [{"ward_id": w, "cases_prevented_1_crew": round(float(tot[(w, 1)]), 3),
                 "cases_prevented_max": round(float(tot[(w, maxk)]), 3),
                 "roi_1_crew": round(float(tot[(w, 1)]), 3)} for w in ids]

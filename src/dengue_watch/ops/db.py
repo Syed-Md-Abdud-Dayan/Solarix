@@ -147,7 +147,6 @@ def audit(user: dict | None, action: str, detail=None) -> None:
 
 
 def fake_phone(n: int) -> str:
-    # 01700-000xxx: clearly FAKE placeholder numbers for the demo seed.
     return f"+8801700000{n:03d}"
 
 
@@ -173,7 +172,7 @@ def seed_demo(wards: list[dict]) -> int:
         specs.append((f"spray_{slug}", demo_pw, "spraying_team", None, city, f"Spraying team {city}", "bn"))
         specs.append((f"beds_{slug}", demo_pw, "bed_team", None, city, f"Bed team {city}", "en"))
         specs.append((f"hosp_{slug}", demo_pw, "hospital", None, city, f"Hospital manager {city}", "en"))
-    with ThreadPoolExecutor(max_workers=8) as ex:          # PBKDF2 releases the GIL
+    with ThreadPoolExecutor(max_workers=8) as ex:
         hashes = list(ex.map(lambda s: auth.hash_password(s[1]), specs))
     ts = now()
     with _WRITE_LOCK:

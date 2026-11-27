@@ -105,7 +105,7 @@ def route(wards: list[dict]) -> dict:
 
     rows = []
     for s in state.values():
-        s["net_deficit"] = s["deficit"] - s["sent"]              # still unplaced after routing
+        s["net_deficit"] = s["deficit"] - s["sent"]
         s["remaining_headroom"] = s["headroom"] - s["received"]
         s["utilisation_pct"] = round(100.0 * s["bed_demand"] / s["effective_capacity"], 1) if s["effective_capacity"] else None
         s["utilisation_after_pct"] = (round(100.0 * (s["bed_demand"] - s["sent"] + s["received"]) / s["effective_capacity"], 1)

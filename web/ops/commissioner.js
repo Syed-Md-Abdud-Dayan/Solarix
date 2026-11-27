@@ -1,4 +1,3 @@
-/* Ward commissioner / secretary page (super admin can pick any ward). */
 (async function () {
   const { $, $$, esc, fmt, badge, bar } = DW;
   const me = await DW.boot(['commissioner', 'secretary', 'super_admin']);

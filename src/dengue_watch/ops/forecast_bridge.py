@@ -84,7 +84,6 @@ def horizon_mae(h: int) -> float:
         return float(C.FALLBACK_MAE.get(h, 1.2))
 
 
-# --------------------------------------------------------------------------- model path
 def predict_variants(origin, h: int, variants: list[tuple]) -> pd.DataFrame:
     """Predict week origin+h for arbitrary ward *variants* in ONE model call.
 
@@ -136,7 +135,6 @@ def predict_variants(origin, h: int, variants: list[tuple]) -> pd.DataFrame:
                          "ward_id": work.loc[mask, "_ward"].values, "predicted_cases": yhat})
 
 
-# --------------------------------------------------------------------------- fallback path
 def fallback_predict(origin, h: int) -> pd.DataFrame:
     """Deterministic seasonal-baseline forecast (no model file needed)."""
     df = data()
@@ -162,7 +160,7 @@ def _predict_baseline(origin, h: int) -> tuple[pd.DataFrame, str]:
         if len(out) != data().ward_id.nunique():
             raise RuntimeError("incomplete model output")
         return out, "model"
-    except Exception as exc:  # never crash: deterministic fallback
+    except Exception as exc:
         print(f"[ops] model h{h} failed ({exc}); using seasonal fallback")
         return fallback_predict(origin, h), "fallback"
 

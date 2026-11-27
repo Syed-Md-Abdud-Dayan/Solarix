@@ -11,7 +11,6 @@
     $('#accCm').innerHTML=`<span></span><span class="hd">PREDICTED<br>OUTBREAK</span><span class="hd">PREDICTED<br>NO OUTBREAK</span>
       <span class="hd">ACTUAL<br>OUTBREAK</span><div class="cell good"><b>${row.tp}</b><span>TRUE POSITIVE</span></div><div class="cell bad"><b>${row.fn}</b><span>MISSED (FN)</span></div>
       <span class="hd">ACTUAL<br>NO OUTBREAK</span><div class="cell bad"><b>${row.fp}</b><span>FALSE ALARM (FP)</span></div><div class="cell good"><b>${row.tn}</b><span>TRUE NEGATIVE</span></div>`;
-    // chart
     const hs=Object.keys(D.horizons), w=760,H=250,p={l:40,r:14,t:14,b:34},iw=w-p.l-p.r,ih=H-p.t-p.b,gw=iw/hs.length,bw=gw/4;
     let g='';for(let i=0;i<=4;i++){const y=p.t+i*ih/4;g+=`<line class="chart-grid" x1="${p.l}" x2="${w-p.r}" y1="${y}" y2="${y}"/><text class="chart-label" x="${p.l-6}" y="${y+3}" text-anchor="end">${100-i*25}%</text>`;}
     const bars=hs.map((k,i)=>{const r=D.horizons[k].find(x=>x.t===t),x0=p.l+i*gw+gw*.12,sel=k===h?' sel':'';

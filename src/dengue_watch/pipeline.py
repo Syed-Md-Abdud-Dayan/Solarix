@@ -109,7 +109,7 @@ def run_pipeline(csv_path: str, output_dir: str = "artifacts"):
         tdf["dec"] = pd.qcut(tdf.p.rank(method="first"), 10, labels=False)
         calib = tdf.groupby("dec")[["p", "y"]].mean().round(3).reset_index()
         ward = tdf.assign(ae=(tdf.y - tdf.p).abs()).groupby(["ward_id", "city"]).agg(actual=("y", "sum"), pred=("p", "sum"), mae=("ae", "mean")).round(2).reset_index()
-        mon = tdf.groupby("month").agg(mae=("y", lambda s: 0)).index  # placeholder to keep month ordering
+        mon = tdf.groupby("month").agg(mae=("y", lambda s: 0)).index
         monthly = tdf.groupby("month")[["y", "p"]].mean().round(3).reset_index()
 
         R["scenarios"][sk] = {

@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
-os.environ.setdefault("OPS_DB", str(Path(tempfile.mkdtemp()) / "export.db"))   # never touch the runtime DB
+os.environ.setdefault("OPS_DB", str(Path(tempfile.mkdtemp()) / "export.db"))
 
 import app  # noqa: E402  (loads the 13 local models; also wires the ops bridge)
 from dengue_watch.ops import dispatch as D, planner, simulator  # noqa: E402
@@ -41,10 +41,10 @@ def main() -> None:
     def add(w):
         if w and w not in picks:
             picks.append(w)
-    add(wards[0]["ward_id"])                                              # top priority ward
-    add(next((x["from_ward"] for x in t), None))                          # sends overflow patients
-    add(next((x["to_ward"] for x in t), None))                            # receives overflow patients
-    add(next((w["ward_id"] for w in wards if w["deficit_level"] == "CRITICAL"), None))   # critical deficit
+    add(wards[0]["ward_id"])
+    add(next((x["from_ward"] for x in t), None))
+    add(next((x["to_ward"] for x in t), None))
+    add(next((w["ward_id"] for w in wards if w["deficit_level"] == "CRITICAL"), None))
     add(next((w["ward_id"] for w in wards if w["deficit_level"] == "WARNING"), None))
     add(next((w["ward_id"] for w in wards if w["crew_deficit"] > 0 and w["risk"] in ("High", "Critical")), None))
     add(next((w["ward_id"] for w in reversed(wards) if w["city"] in ("Gazipur", "Narayanganj")), None))

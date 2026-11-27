@@ -138,7 +138,6 @@ def match_topic(text: str) -> tuple[Optional[str], float]:
             elif _BN_RE.search(kw):
                 hit = kw in text
             else:
-                # prefix match so "symptom" hits "symptoms", "vaccin" hits "vaccination"
                 hit = re.search(rf"(?<![a-z0-9]){re.escape(kw)}", text) is not None
             if hit:
                 score += 1.0 + 0.4 * kw.count(" ") + min(len(kw), 20) / 40
@@ -171,7 +170,6 @@ def extract_entities(raw: str, cities: list[str], today: date) -> dict[str, Any]
         m = re.search(r"(?:ward|ওয়ার্ড)[\s_#-]*(?:no\.?|number|নং|নম্বর)?[\s_#:-]*0*(\d{1,3})\b", t) or re.search(r"\b0*(\d{1,3})\s*(?:no\.?|নং)?\s*(?:ward|ওয়ার্ড)", t)
         if m:
             ent["ward_no"] = int(m.group(1))
-    # horizon in weeks
     m = re.search(r"\b(\d{1,2})\s*(?:-)?\s*(?:weeks?|wks?|w\b|সপ্তাহ)", t)
     if m:
         ent["horizon"] = int(m.group(1))
@@ -196,7 +194,6 @@ def extract_entities(raw: str, cities: list[str], today: date) -> dict[str, Any]
             continue
         if _BN_RE.search(name) and name not in t:
             continue
-        # 'may' is also a verb: require a year or a preposition before it
         if name == "may" and not re.search(r"\b(in|during|for|of|by)\s+may\b|\bmay\s+(20\d\d|month)", t):
             continue
         ent["month"] = num
@@ -212,7 +209,6 @@ def extract_entities(raw: str, cities: list[str], today: date) -> dict[str, Any]
         ent["year"] = today.year - 1
     if re.search(r"next monsoon|coming monsoon|upcoming season|next season|next peak", t):
         ent["next_season"] = True
-    # rainfall what-if
     rain = None
     if re.search(r"\b(doubl\w*|twice|2x|২ গুণ|দ্বিগুণ)", t): rain = 2.0
     elif re.search(r"\b(half|50% less|halves|halved|অর্ধেক)", t): rain = 0.5
@@ -354,7 +350,6 @@ class ChatEngine:
         if re.search(r"\b(joke|football|cricket|movie|recipe|stock price|bitcoin|politic\w*|election|prime minister|president|homework|translate|poem|song)\b", t) and not has_dengue:
             return self._pack(L, ctx, "off_topic", K.SMALLTALK["off_topic"][L])
 
-        # 4. data intents
         if re.search(r"accura|reliab|trust|precision|recall|f1|r2|r²|rmse|\bmae\b|metric|error|validat|how good|nirbhul|নির্ভুল|সঠিক|নির্ভরযোগ্য|কতটা ভালো", t):
             return self._accuracy(L, ctx, ent)
         if re.search(r"\b(dataset|data set|data source|where.*data|data (period|coverage|range)|how many wards|which cities|cities (do|are)|coverage|last updated|how recent|up to date|latest data)\b|ডেটা|তথ্যের উৎস|কয়টি ওয়ার্ড", t) and not re.search(r"forecast|risk", t):
@@ -706,7 +701,6 @@ class ChatEngine:
                 return sum(w["expected"] for w in self.b.future(city, start, end, r, t)["weekly"])
             b0 = total(1.0, 0.0)
             if b0 < 5 and not (ent.get("year") or ent.get("month")):
-                # off-season: a rain scenario means nothing, so switch to the coming peak season
                 year = today.year if today.month <= 8 else today.year + 1
                 start, end, label = date(year, 7, 1), date(year, 9, 30), self._t(L, f"the {year} peak season (Jul-Sep)", f"{year} সালের শীর্ষ মৌসুম (জুলাই-সেপ্টেম্বর)")
                 b0 = total(1.0, 0.0)

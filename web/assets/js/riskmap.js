@@ -1,7 +1,4 @@
 'use strict';
-/* ================= Risk map: 60 wards, orbit + tiles, animated forecast =================
-   Data: /api/map (falls back to /api/risk per city on older servers).
-   Uses helpers from dashboard.js: $, api, fmt, dateFmt, escapeHtml. */
 const rm = { h: 3, view: 'orbit', data: null, sel: null, off: new Set(), loaded: false, date: '2025-08-04', rain: 1,
   cache: new Map(), playing: false, timer: null, token: 0, refs: null, vb: null, dragged: false, shown: {} };
 const RM_TIERS = ['Critical', 'High', 'Medium', 'Low'];
@@ -12,13 +9,12 @@ const rmShort = id => id.replace(/_Ward_/, ' · W');
 const rmKey = h => `${rm.date}|${rm.rain}|${h}`;
 const rmSvg = () => $('#rmStage svg');
 
-/* ---------- data ---------- */
 async function rmFetch(h) {
   const k = rmKey(h); if (rm.cache.has(k)) return rm.cache.get(k);
   const q = new URLSearchParams({ horizon: h, as_of: rm.date, rain_mult: rm.rain });
   let data;
   try { data = await api('/api/map?' + q); }
-  catch (e1) { /* older server without /api/map */
+  catch (e1) {
     const hl = await api('/api/health'), parts = [];
     for (const c of hl.cities) { const p = new URLSearchParams(q); p.set('city', c); parts.push(await api('/api/risk?' + p)); }
     const m = parts[0];
@@ -43,7 +39,6 @@ function rmCities() {
 }
 const rmTop3 = () => new Set(rm.data.wards.slice().sort((a, b) => b.predicted_cases - a.predicted_cases).slice(0, 3).map(w => w.ward_id));
 
-/* ---------- tooltip ---------- */
 function rmTip(html, x, y) {
   const t = $('#rmTip'); t.innerHTML = html; t.classList.add('show');
   const w = t.offsetWidth, h = t.offsetHeight;
@@ -52,7 +47,6 @@ function rmTip(html, x, y) {
 }
 const rmHideTip = () => $('#rmTip').classList.remove('show');
 
-/* ---------- build (once per view) ---------- */
 function rmBuildOrbit() {
   const cities = rmCities(), n = rm.data.wards.length, GAP = 1.8, R1 = 150, R2 = 290;
   const step = 2 * Math.PI / (n + GAP * cities.length), f = v => v.toFixed(1);
@@ -64,7 +58,6 @@ function rmBuildOrbit() {
   for (let i = 0; i < 90; i++) g += `<circle class="rm-star ${i % 4 === 0 ? 'rm-tw' : ''}" style="animation-delay:${(rnd() * 3).toFixed(1)}s" cx="${f(rnd() * RM_W)}" cy="${f(rnd() * RM_H)}" r="${(0.4 + rnd() * 1.1).toFixed(1)}" opacity="${(0.25 + rnd() * 0.5).toFixed(2)}"/>`;
   for (let i = 0; i < 120; i++) { const a = i / 120 * 2 * Math.PI, L = i % 5 === 0 ? 9 : 4, [x1, y1] = pt(330, a), [x2, y2] = pt(330 + L, a); g += `<line class="rm-tick" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}"/>`; }
   g += [95, R1, R2, 330].map(r => `<circle class="rm-ring" cx="${RM_CX}" cy="${RM_CY}" r="${r}"/>`).join('');
-  /* radar sweep: stacked wedges fading behind the leading edge */
   g += `<g class="rm-sweep" style="transform-origin:${RM_CX}px ${RM_CY}px">`;
   for (let i = 0; i < 8; i++) { const a1 = -i * 0.09, a2 = -(i + 1) * 0.09, [x1, y1] = pt(335, a1), [x2, y2] = pt(335, a2);
     g += `<path d="M${RM_CX} ${RM_CY} L${f(x1)} ${f(y1)} A335 335 0 0 0 ${f(x2)} ${f(y2)} Z" fill="#2ee6a6" opacity="${(0.2 - i * 0.022).toFixed(3)}"/>`; }
@@ -96,7 +89,6 @@ function rmBuildTiles() {
     <div class="rm-grid">${c.list.map(w => `<button class="rm-tile" style="animation-delay:${(i++ * 0.012).toFixed(2)}s" data-ward="${w.ward_id}"><span>${w.ward_no}</span><small></small></button>`).join('')}</div></section>`).join('')}</div>`;
 }
 
-/* ---------- apply data to existing DOM (enables smooth morphing) ---------- */
 function rmApply() {
   const d = rm.data, st = $('#rmStage'), top3 = rmTop3(), cities = rmCities();
   const maxW = Math.max(1, ...d.wards.map(w => w.predicted_cases)), maxC = Math.max(1, ...cities.map(c => c.expected_cases));
@@ -164,7 +156,6 @@ function rmLegend() {
   $('#rmLegend').innerHTML = RM_TIERS.map(t => `<button class="rm-chip ${rm.off.has(t) ? 'off' : ''}" data-tier="${t}" style="--rk:${RM_COL[t]}" aria-pressed="${!rm.off.has(t)}"><i></i>${t} <b>${cnt[t]}</b></button>`).join('');
 }
 
-/* ---------- side panel ---------- */
 function rmSpark(id) {
   const pts = []; for (let h = 1; h <= 12; h++) { const d = rm.cache.get(rmKey(h)), w = d && d.wards.find(x => x.ward_id === id); if (w) pts.push({ h, v: w.predicted_cases, r: w.risk }); }
   if (pts.length < 2) return '<div class="rm-sub">Loading the 12-week trajectory…</div>';
@@ -194,7 +185,6 @@ function rmCityDetail(name) {
     <h5>WARDS, HIGHEST FIRST</h5><div class="rm-wardlist">${c.list.slice().sort((a, b) => b.predicted_cases - a.predicted_cases).map(w => `<button data-ward="${w.ward_id}" style="--rk:${RM_COL[w.risk]}"><i></i>Ward ${w.ward_no}<span>${fmt(w.predicted_cases)}</span></button>`).join('')}</div>`;
 }
 
-/* ---------- interactions ---------- */
 function rmFocus(city, ward) {
   const svg = rmSvg(); if (!svg) return; svg.classList.add('fx');
   svg.querySelectorAll('.rm-node').forEach(n => n.classList.toggle('fade', n.dataset.city !== city));
@@ -243,7 +233,6 @@ function rmZoom(f, cx, cy) {
   rmSetVB({ x: v.x + (v.w - nw) * px, y: v.y + (v.h - nh) * py, w: nw, h: nh });
 }
 
-/* ---------- lifecycle ---------- */
 function rmBuild() {
   const st = $('#rmStage'); $('#rmStageWrap').classList.toggle('is-tiles', rm.view === 'tiles');
   st.innerHTML = rm.view === 'orbit' ? rmBuildOrbit() : rmBuildTiles();

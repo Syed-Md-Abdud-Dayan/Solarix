@@ -45,7 +45,6 @@ function exportCSV(){if(!state.wards.length){toast('No ward results to export.')
 async function init(){try{const health=await api('/api/health');setConnection(true,`${health.models_loaded} saved models · ${health.wards} wards`);$('#citySelect').innerHTML=health.cities.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');state.city=health.cities[0];$('#subheadDate');$('#refreshBtn').addEventListener('click',loadDashboard);$('#applyBtn').addEventListener('click',loadDashboard);$('#citySelect').addEventListener('change',()=>{state.city=$('#citySelect').value;loadDashboard();});$('#horizonSelect').addEventListener('change',loadDashboard);$('#wardSearch').addEventListener('input',()=>renderWards(state.wards));$('#exportBtn').addEventListener('click',exportCSV);await loadDashboard();}catch(e){setConnection(false,e.message);$('#bannerText').textContent=`Could not connect to backend: ${e.message}. Start the Python server using the README instructions.`;$('#dataBanner').style.background='#fff1ef';$('#dataBanner').style.borderColor='#f3cfca';}}
 document.addEventListener('DOMContentLoaded',init);
 
-/* ================= Risk prediction engine UI ================= */
 const rk = { h: 3, ready: false };
 function rainLagChart(series, mult){
   const w=700,h=170,p={l:38,r:10,t:14,b:26},iw=w-p.l-p.r,ih=h-p.t-p.b,max=Math.max(10,...series.map(d=>d.mm))*1.15,n=series.length,bw=iw/n*.62;
@@ -94,7 +93,6 @@ async function initRisk(){
 }
 document.addEventListener('DOMContentLoaded',initRisk);
 
-/* ================= page router ================= */
 const PAGES={home:'Risk prediction',map:'Risk map',alerts:'Alerts',actions:'Action plan',ask:'Ask Dengue Watch',forecast:'Forecasts & history',wards:'Ward explorer',method:'Model & data',accuracy:'Model accuracy'};
 function showPage(){
   let pg=(location.hash||'#home').slice(1); if(!PAGES[pg]) pg='home';
@@ -106,7 +104,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b
 window.addEventListener('hashchange',showPage);
 document.addEventListener('DOMContentLoaded',showPage);
 
-/* ================= Alerts, Action plan, Ask (generated from model output) ================= */
 const store={get(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch(e){return f}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const SEV={Critical:'rk-Critical',High:'rk-High',Medium:'rk-Medium',Low:'rk-Low'};
 let readAlerts=new Set(store.get('dw.read',[])), doneTasks=new Set(store.get('dw.done',[]));

@@ -39,7 +39,6 @@ _READY = {"ok": False, "error": None}
 PREFIXES = ("/api/ops/", "/api/alloc", "/api/overflow", "/api/simulate", "/api/dispatch")
 
 
-# ----------------------------------------------------------------- startup
 def init(app_module) -> None:
     """Called once from app.py: wire the bridge, create + seed the DB, warm caches."""
     FB.init(app_module)
@@ -51,7 +50,7 @@ def init(app_module) -> None:
         FB.set_force_fallback(bool(s.get("force_fallback")))
         notify.OFFLINE_SIM["on"] = bool(s.get("offline_sim", False))
         _READY["ok"] = True
-    except Exception as exc:          # the Phase 1 app must keep working whatever happens here
+    except Exception as exc:
         _READY["error"] = f"{type(exc).__name__}: {exc}"
         print(f"[ops] init failed: {_READY['error']}")
         traceback.print_exc()
@@ -71,7 +70,6 @@ def handles(path: str) -> bool:
     return path in ("/ops", "/ops/") or (path.startswith("/ops/") and "." not in path.rsplit("/", 1)[-1])
 
 
-# ----------------------------------------------------------------- response helpers
 class Reply(Exception):
     def __init__(self, status, body, ctype="application/json; charset=utf-8", headers=None):
         self.status, self.body, self.ctype, self.headers = status, body, ctype, headers or []
@@ -127,7 +125,6 @@ def _overrides(params) -> dict:
     return {k: v for k, v in o.items() if v is not None}
 
 
-# ----------------------------------------------------------------- session
 def _session(h):
     raw = h.headers.get("Cookie") or ""
     try:
@@ -162,7 +159,6 @@ def _cookie_header(value: str, max_age: int, secure: bool) -> tuple:
     return ("Set-Cookie", f"{COOKIE}={value}; Path=/; Max-Age={max_age}; HttpOnly; SameSite=Lax" + ("; Secure" if secure else ""))
 
 
-# ----------------------------------------------------------------- entry points
 def dispatch(h, method: str, parsed) -> None:
     path = parsed.path
     params = parse_qs(parsed.query)
@@ -209,7 +205,6 @@ def _ward_city() -> dict:
 
 
 def _route(h, method, path, params, body):
-    # ---------------- public engine endpoints
     if path == "/api/ops/health":
         return health()
     if path == "/api/ops/forecast" and method == "GET":
@@ -237,7 +232,6 @@ def _route(h, method, path, params, body):
     if path.startswith("/api/dispatch/") and method == "GET":
         return _dispatch_endpoint(unquote(path[len("/api/dispatch/"):]), params)
 
-    # ---------------- auth
     if path == "/api/ops/login" and method == "POST":
         ip = h.client_address[0]
         if not auth.login_allowed(ip):
@@ -266,7 +260,6 @@ def _route(h, method, path, params, body):
             _err(401, "Not logged in")
         return {"user": auth.public_user(u), "csrf": auth.csrf_for(nonce)}
 
-    # ---------------- authenticated platform
     if path == "/api/ops/settings":
         if method == "GET":
             _require(h, method)
@@ -380,7 +373,6 @@ def _route(h, method, path, params, body):
     _err(404, "Not found")
 
 
-# ----------------------------------------------------------------- endpoint bodies
 NETWORK_PATTERNS = ("urllib.request", "import requests", "http.client", "create_connection", "openai", "anthropic",
                     "httpx", "aiohttp", "smtplib")
 CORE_MODULES = ["ops/config.py", "ops/forecast_bridge.py", "ops/allocation.py", "ops/overflow.py", "ops/simulator.py",
@@ -504,7 +496,7 @@ def _dispatch_endpoint(ward, params):
         raise Reply(200, "\n\n-----\n\n".join(x.get("long") or x.get("text") for x in texts), "text/plain; charset=utf-8")
     sms = [D.sms(ctx, t, lang) for t in D.TEAMS]
     wa = [D.whatsapp(ctx, t, lang) for t in D.TEAMS]
-    for s, w in zip(sms, wa):   # click-to-send links (no API key; the officer taps send)
+    for s, w in zip(sms, wa):
         s["link"] = D.deep_links("", s["short"])["sms"]
         w["link"] = D.deep_links("", w["text"])["whatsapp"]
     return {"ward_id": ward, "target_date": p["target_date"], "source": p["source"], "sms": sms, "whatsapp": wa,

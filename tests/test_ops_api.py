@@ -92,14 +92,12 @@ def test_commissioner_scope_and_idempotent_plan(server):
     assert st == 200 and {w["ward_id"] for w in p["allocation"]["wards"]} == {"DNCC_Ward_01"}
     st, g1 = c.req("POST", "/api/ops/plan/generate", {})
     assert st == 200 and g1["created"] + g1["updated"] >= 1
-    st, g2 = c.req("POST", "/api/ops/plan/generate", {})      # re-run: updates, never duplicates
+    st, g2 = c.req("POST", "/api/ops/plan/generate", {})
     assert st == 200 and g2["created"] == 0 and g2["updated"] == g1["created"] + g1["updated"]
     st, t = c.req("GET", "/api/ops/tasks")
     assert all(x["ward_id"] == "DNCC_Ward_01" for x in t["tasks"])
-    # cannot create a task for another ward
     st, _ = c.req("POST", "/api/ops/tasks", {"ward_id": "DSCC_Ward_02", "type": "other", "description": "x"})
     assert st == 403
-    # another ward's commissioner cannot touch this ward's task
     other = Client(server)
     other.login("comm_dscc02")
     tid = t["tasks"][0]["id"]
@@ -126,7 +124,6 @@ def test_full_flow_team_progress_hospital(server):
     assert risks == sorted(risks), "spraying order must be High before Medium before Low"
     st, inbox = team.req("GET", "/api/ops/inbox")
     assert st == 200 and inbox["unread"] > 0
-    # team cannot cancel
     assert team.req("POST", f"/api/ops/tasks/{spray[0]['id']}", {"status": "cancelled"})[0] == 403
     for s in ("acknowledged", "in_progress", "done"):
         st, _ = team.req("POST", f"/api/ops/tasks/{spray[0]['id']}", {"status": s, "proof": {"houses_sprayed": 120}})

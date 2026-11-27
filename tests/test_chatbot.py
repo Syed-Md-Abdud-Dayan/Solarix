@@ -37,7 +37,6 @@ def text_of(r):
     return " ".join([rp.get("title") or "", rp["text"], *rp["bullets"], *rp["notes"]])
 
 
-# ---------------------------------------------------------------- safety
 def test_emergency_personal_red_flags():
     for q in ["my son has fever and keeps vomiting and stomach pain", "bleeding gums and drowsy", "he is vomiting blood",
               "my father has fever and difficulty breathing", "আমার মেয়ের জ্বর আর পেটে ব্যথা, বারবার বমি হচ্ছে"]:
@@ -119,7 +118,7 @@ def test_future_month_is_peak_season():
 def test_fresh_data_uses_models_and_ward_detail():
     r = ask(FRESH, "risk in Dhaka North next 4 weeks")
     assert r["intent"] == "risk:city" and r["context"]["city"] == "Dhaka North" and r["context"]["horizon"] == 4
-    r2 = ask(FRESH, "what about Gazipur?", r["context"])          # follow-up keeps horizon, swaps city
+    r2 = ask(FRESH, "what about Gazipur?", r["context"])
     assert r2["context"]["city"] == "Gazipur" and r2["context"]["horizon"] == 4
     w = ask(FRESH, "ward 5 in dhaka south")
     assert w["intent"] == "ward:detail" and "DSCC_Ward_05" in text_of(w)
@@ -130,7 +129,7 @@ def test_fresh_data_uses_models_and_ward_detail():
 def test_whatif_rain_increases_peak_season_cases():
     r = ask(STALE, "what if rainfall doubles in Gazipur")
     assert r["intent"] == "whatif" and r["entities"]["rain_mult"] == 2.0
-    assert "+" in r["reply"]["text"] and "peak season" in text_of(r)   # off-season -> switched to peak season
+    assert "+" in r["reply"]["text"] and "peak season" in text_of(r)
 
 
 def test_compare_history_accuracy_season():

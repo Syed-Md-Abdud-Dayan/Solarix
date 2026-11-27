@@ -28,8 +28,6 @@ RESULTS_PATH = Path(os.getenv("DENGUE_RESULTS", ROOT / "artifacts/results.json")
 WEB_DIR = ROOT / "web"
 
 
-# Model files were serialized with scikit-learn 1.9.1. Use that version from
-# requirements.txt to avoid cross-version pickle incompatibilities.
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     MODELS = {h: joblib.load(MODEL_DIR / f"model_h{h}.joblib") for h in range(13)}
@@ -86,7 +84,6 @@ def _forecast_features(h: int) -> pd.DataFrame:
         target_date = LATEST_DATE + timedelta(weeks=h)
         rows = X.loc[work.date.eq(target_date)].copy()
         rows.index = work.loc[work.date.eq(target_date), "ward_id"].values
-    # Match the persisted training schema exactly and fail loudly on mismatch.
     missing = set(model_bundle["features"]) - set(rows.columns)
     if missing:
         raise RuntimeError(f"Missing model features for h{h}: {sorted(missing)}")
@@ -97,7 +94,6 @@ def _forecast_features(h: int) -> pd.DataFrame:
     return rows
 
 
-# Cache model outputs: they only change when the source dataset or model files change.
 _FORECAST_CACHE: dict[int, pd.DataFrame] = {}
 
 def get_predictions(h: int) -> pd.DataFrame:
@@ -115,7 +111,6 @@ def get_predictions(h: int) -> pd.DataFrame:
 
 
 def _risk_label(rank: float) -> str:
-    # Relative prioritisation within the selected city, not a clinical risk score.
     if rank >= 0.90: return "Priority 1"
     if rank >= 0.70: return "Priority 2"
     return "Monitor"
@@ -169,8 +164,6 @@ def dashboard_payload(params):
             "water_logging_risk_index": round(float(r.water_logging_risk_index), 3),
             "sanitation_score": round(float(r.sanitation_score), 3),
         })
-    # The saved models/model_hN.joblib files are ALWAYS the refit gradient-boosting model, so report
-    # that model's held-out metrics (not whichever model happened to rank "best" during training).
     metrics = scenario.get("metrics", {}).get(DEPLOYED_MODEL, {})
     return {
         "source": "trained_model", "model_connected": True, "city": city, "cities": CITIES,
@@ -302,7 +295,7 @@ def risk_payload(params):
     pos = np.searchsorted(DATES, np.datetime64(origin), side="right") - 1
     if pos < 40:
         raise ValueError("as_of is too early - at least 40 weeks of history are needed")
-    origin = pd.Timestamp(DATES[pos])  # snap to the weekly observation date
+    origin = pd.Timestamp(DATES[pos])
     pred = predict_at(origin, h, rain_mult)
     pred = pred[pred.city.eq(city)].sort_values("predicted_cases", ascending=False)
     pred["risk"] = pred.predicted_cases.map(risk_level)
@@ -398,7 +391,7 @@ def future_payload(params):
     if end <= LATEST_DATE: raise ValueError(f"end must be after the last data week ({LATEST_DATE.date()}); use /api/risk for dates inside the data")
     if end > FUTURE_MAX: raise ValueError(f"end must be on or before {FUTURE_MAX.date()}")
     if start > end: raise ValueError("start must be before end")
-    cache_end = pd.Timestamp("2028-12-31") if end <= pd.Timestamp("2028-12-31") else FUTURE_MAX  # 2 buckets -> better cache reuse
+    cache_end = pd.Timestamp("2028-12-31") if end <= pd.Timestamp("2028-12-31") else FUTURE_MAX
     long = _future_long(cache_end, rain_mult, temp_shift)
     long = long[(long.date >= start) & (long.date <= end)].copy()
     if long.empty: raise ValueError("No forecast weeks fall inside that date range")
@@ -496,8 +489,6 @@ class AppBackend:
 
 CHAT = ChatEngine(AppBackend())
 
-# Phase 2 operations platform (allocation, overflow, simulator, dispatch, roles).
-# All of it lives in src/dengue_watch/ops/; app.py only registers one hook per verb.
 from dengue_watch.ops import routes as OPS
 OPS.init(sys.modules[__name__])
 _RATE: dict = {}

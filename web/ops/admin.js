@@ -1,4 +1,3 @@
-/* Regional command (super admin) page. */
 (async function () {
   const { $, $$, esc, fmt, badge, bar } = DW;
   const me = await DW.boot(['super_admin']);
@@ -6,10 +5,8 @@
   let settings = {}, tab = 'alloc', lastAlloc = null, lastSim = null;
   const SUP = [['saline_bags', 'Saline'], ['diagnostic_kits', 'Kits'], ['hospital_beds', 'Beds']];
 
-  // ---------------- tabs
   $$('#tabs button').forEach((b) => b.onclick = () => { tab = b.dataset.t; $$('#tabs button').forEach((x) => x.classList.toggle('on', x === b)); $$('[data-tab]').forEach((p) => p.classList.toggle('hide', p.dataset.tab !== tab)); load(); });
 
-  // ---------------- settings bootstrap
   try { settings = await DW.api('/api/ops/settings'); } catch (e) { settings = {}; }
   $('#stock').value = settings.stock_pct ?? 100; $('#crews').value = settings.total_crews ?? 60;
   $('#buf').value = Math.round((settings.buffer ?? 0) * 100); $('#hz').value = settings.horizon ?? 1; $('#eq').checked = settings.equity !== false;
@@ -25,7 +22,6 @@
     } catch (e) { DW.toast('Could not save: ' + e.message); }
   };
 
-  // ---------------- allocation
   async function loadAlloc() {
     let a, base = null;
     try {
@@ -54,7 +50,6 @@
         <td>${badge(w.deficit_level)} <span class="small muted">${esc(w.what_got_cut)}</span></td></tr>`).join('');
   }
 
-  // ---------------- overflow
   async function loadOverflow() {
     let o; try { o = await DW.api(`/api/overflow?horizon=${$('#hz').value}`); } catch (e) { return; }
     $('#capNote').textContent = o.summary.capacity_note;
@@ -65,7 +60,6 @@
       o.wards.map((w) => `<tr><td><b>${esc(w.ward_id)}</b><br><span class="small muted">${esc(w.city)}</span></td><td class="num">${w.bed_demand}</td><td class="num">${w.effective_capacity}</td><td class="num">${w.deficit}</td><td class="num">${w.sent}</td><td class="num">${w.received}</td><td class="num">${w.net_deficit}</td><td class="num">${w.remaining_headroom}</td><td>${badge(w.status)}</td></tr>`).join('');
   }
 
-  // ---------------- simulator
   function renderSim(s) {
     lastSim = s;
     const c = s.compare;
@@ -94,7 +88,6 @@
     catch (e) { DW.toast(e.message); }
   };
 
-  // ---------------- operations
   async function loadOps() {
     try {
       const p = await DW.api('/api/ops/progress');
@@ -106,7 +99,7 @@
       const ob = await DW.api('/api/ops/outbox');
       $('#outbox').innerHTML = `<table><tr><th>Channel</th>${['queued', 'delivered', 'read', 'sent', 'failed'].map((s) => `<th class="num">${s}</th>`).join('')}</tr>${Object.entries(ob.status_counts).map(([ch, v]) => `<tr><td>${esc(ch)}</td>${['queued', 'delivered', 'read', 'sent', 'failed'].map((s) => `<td class="num">${v[s] || 0}</td>`).join('')}</tr>`).join('')}</table>
         <p class="small muted">Live adapters: ${ob.live_adapters.length ? esc(ob.live_adapters.join(', ')) : 'none configured - SMS/WhatsApp use click-to-send links; in-app delivery always works offline.'}</p>`;
-    } catch (e) { /* offline: cached */ }
+    } catch (e) { }
   }
   $('#genAll').onclick = async () => {
     $('#genOut').textContent = 'Generating tasks for all 60 wards…';
@@ -115,12 +108,10 @@
   };
   $('#retry').onclick = async () => { try { const r = await DW.api('/api/ops/notify/retry', { method: 'POST', body: {} }); DW.toast(r.note || `Sent ${r.sent}, failed ${r.failed || 0}, still queued ${r.still_queued}`); loadOps(); } catch (e) { DW.toast(e.message); } };
 
-  // ---------------- audit
   async function loadAudit() {
     try { const a = await DW.api('/api/ops/audit'); $('#auditTbl').innerHTML = '<tr><th>Time (UTC)</th><th>User</th><th>Role</th><th>Action</th><th>Detail</th></tr>' + a.audit.map((r) => `<tr><td class="small">${esc(r.ts)}</td><td>${esc(r.username)}</td><td>${esc(r.role)}</td><td><b>${esc(r.action)}</b></td><td class="small muted">${esc(r.detail)}</td></tr>`).join(''); } catch (e) { }
   }
 
-  // ---------------- settings
   function fillSettings() {
     $('#sOrigin').value = settings.origin || ''; $('#sEsc').value = settings.escalation_hours ?? 12;
     const o = settings.stock_override || {}; $('#ovS').value = o.saline_bags || ''; $('#ovK').value = o.diagnostic_kits || ''; $('#ovB').value = o.hospital_beds || '';

@@ -38,15 +38,13 @@ for Y in TEST_YEARS:
     hist = df[df.date < cut]
     test = df[(df.date >= cut) & (df.date < pd.Timestamp(f"{Y+1}-01-01"))]
     dates = pd.DatetimeIndex(sorted(test.date.unique()))
-    scen = F.weather_scenarios(hist)  # earlier years only
+    scen = F.weather_scenarios(hist)
     long = F.forecast_weather_only(hist, bundle, dates, scen)
     s = F.summarize(long).merge(test[["ward_id", "date", "dengue_cases"]], on=["ward_id", "date"])
     cs = F.city_summary(long).merge(test.groupby(["city", "date"]).dengue_cases.sum().reset_index(), on=["city", "date"])
 
-    # baseline: seasonal average of past cases per ward x week-of-year
     clim = hist.groupby(["ward_id", "woy"]).dengue_cases.mean().rename("clim").reset_index()
     s = s.merge(test[["ward_id", "date", "woy"]], on=["ward_id", "date"]).merge(clim, on=["ward_id", "woy"], how="left")
-    # upper bound: same model but told the real weather (what the old h0 'nowcast' measures)
     Xt = X0[(df.date >= cut) & (df.date < pd.Timestamp(f"{Y+1}-01-01"))]
     oracle = np.maximum(0, model.predict(Xt))
 

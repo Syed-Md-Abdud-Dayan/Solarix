@@ -12,7 +12,6 @@ from dengue_watch.ops import overflow as O
 ROOT = Path(__file__).resolve().parents[1]
 
 
-# ----------------------------------------------------------------- supply rule
 def test_supply_rule_matches_onsite_dataset():
     path = ROOT / "data/bangladesh_dengue_onsite.csv"
     if not path.exists():
@@ -30,7 +29,6 @@ def test_demand_rule_examples():
     assert A.demand_for_cases(10, buffer=0.1)["saline_bags"] == 26
 
 
-# ----------------------------------------------------------------- allocation
 def _wards():
     rows = []
     risks = ["Critical", "High", "Medium", "Low"]
@@ -103,7 +101,6 @@ def test_crews_assigned_by_risk_order_and_deterministic():
     assert a["crews"]["assigned"] == 5
 
 
-# ----------------------------------------------------------------- overflow
 def _beds():
     return [
         {"ward_id": "A1", "city": "A", "bed_demand": 9, "capacity": 4},
@@ -130,9 +127,9 @@ def test_overflow_conserves_patients_and_respects_capacity():
         sum(t["patients"] for t in res["transfers"])
     for w in res["wards"]:
         assert w["remaining_headroom"] >= 0 and w["net_deficit"] >= 0
-    assert by["A1"]["net_deficit"] == 0                       # 5 extra fit into A2/A3
+    assert by["A1"]["net_deficit"] == 0
     b = next(c for c in res["cities"] if c["city"] == "B")
-    assert b["surge"] and b["unresolved_deficit"] == 4        # city B lacks beds; C1 must NOT help
+    assert b["surge"] and b["unresolved_deficit"] == 4
     assert by["C1"]["received"] == 0
     assert any(a["city"] == "B" for a in res["alerts"])
 
@@ -150,7 +147,7 @@ def test_pooled_capacity_sums_to_pool():
     caps = O.pooled_capacities(wards, 99)
     weekly_total = [sum(week) for week in zip(*(w["history_beds"] for w in wards))]
     pool = O.baseline_capacity(weekly_total, 99)
-    assert pool == 12   # all four wards peak together: 4 x 3 beds
+    assert pool == 12
     assert sum(caps.values()) == pool
     assert caps["W3"] >= caps["W0"]
 
@@ -162,10 +159,9 @@ def test_pooled_capacity_rejects_misaligned_history():
         O.pooled_capacities(wards)
 
 
-# ----------------------------------------------------------------- model-backed (bridge / simulator)
 @pytest.fixture(scope="module")
 def bridge():
-    import app  # loads the 13 models once
+    import app
     from dengue_watch.ops import forecast_bridge as FB
     FB.init(app)
     FB.set_force_fallback(False)
@@ -208,7 +204,7 @@ def test_coverage_has_diminishing_returns():
     from dengue_watch.ops import simulator as S
     gains = [S.coverage(k + 1, 1.0) - S.coverage(k, 1.0) for k in range(4)]
     assert all(a > b for a, b in zip(gains, gains[1:]))
-    assert S.coverage(1, 1.5) < S.coverage(1, 1.0)            # denser ward -> less coverage per crew
+    assert S.coverage(1, 1.5) < S.coverage(1, 1.0)
 
 
 def test_recommendation_respects_budget_and_ranking(bridge):

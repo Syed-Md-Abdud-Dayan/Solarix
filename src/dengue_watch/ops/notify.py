@@ -34,9 +34,9 @@ from .dispatch import deep_links
 
 ROOT = Path(__file__).resolve().parents[3]
 RUNTIME_DIR = Path(os.getenv("OPS_EXPORT_DIR", ROOT / "exports/runtime"))
-OFFLINE_SIM = {"on": False}       # admin "kill-switch demo": behave as if there is no internet
+OFFLINE_SIM = {"on": False}
 SMSGATE_CLOUD_URL = "https://api.sms-gate.app/3rdparty/v1/messages"
-PLACEHOLDER_PREFIX = "+8801700000"   # db.fake_phone(): demo seed numbers, may belong to real people
+PLACEHOLDER_PREFIX = "+8801700000"
 
 
 def _smsgate() -> bool:
@@ -55,7 +55,7 @@ def sms_target(phone: str | None) -> str | None:
     phone = (phone or "").strip()
     if not phone or phone.startswith(PLACEHOLDER_PREFIX):
         return None
-    if phone.startswith("01") and len(phone) == 11:      # local Bangladesh format -> E.164
+    if phone.startswith("01") and len(phone) == 11:
         phone = "+88" + phone
     return phone
 
@@ -163,13 +163,11 @@ def _send_live(row: dict) -> tuple[bool, str]:
             to = sms_target(row["phone"])
             if not to:
                 return False, "placeholder or missing phone number: set SMS_TEST_TO or a real number"
-            if _smsgate():     # your own SIM, through the SMS Gateway for Android app
+            if _smsgate():
                 cred = base64.b64encode(f"{os.getenv('SMSGATE_USER')}:{os.getenv('SMSGATE_PASSWORD')}".encode()).decode()
                 req = urllib.request.Request(
                     os.getenv("SMSGATE_URL", SMSGATE_CLOUD_URL),
                     data=json.dumps({"textMessage": {"text": row["body"][:1500]}, "phoneNumbers": [to]}).encode("utf-8"),
-                    # explicit User-Agent: Cloudflare in front of api.sms-gate.app rejects
-                    # urllib's default "Python-urllib/x.y" with 403 (error code 1010)
                     headers={"Authorization": "Basic " + cred, "Content-Type": "application/json",
                              "User-Agent": "DengueWatch/1.0"})
                 urllib.request.urlopen(req, timeout=10).read()
@@ -180,7 +178,6 @@ def _send_live(row: dict) -> tuple[bool, str]:
             req.add_header("Authorization", "Basic " + base64.b64encode(f"{sid}:{os.getenv('TWILIO_TOKEN')}".encode()).decode())
             urllib.request.urlopen(req, timeout=5).read()
             return True, ""
-        # mirror adapters: post the notice to an ops Telegram group or an ops mailbox
         if os.getenv("TELEGRAM_BOT_TOKEN") and os.getenv("TELEGRAM_CHAT_ID"):
             import urllib.parse
             import urllib.request
@@ -221,18 +218,18 @@ def retry_queued(limit: int = 200) -> dict:
         if not _smsgate_local():
             return {"attempted": 0, "sent": 0, "still_queued": len(rows), "online": False,
                     "note": "Offline: messages kept in the outbox; in-app delivery already done. Retry when back online."}
-        adapters = ["sms"]         # no internet, but the phone gateway is reachable on the LAN
+        adapters = ["sms"]
     sent, failed, attempted, sms_left = 0, 0, 0, int(os.getenv("SMS_MAX_PER_RUN", "20"))
     for r in rows:
         if r["channel"] not in adapters:
             continue
         if r["channel"] == "sms" and (_smsgate() or _twilio()):
-            if not sms_target(r["phone"]):     # demo placeholder: drop it without using the budget
+            if not sms_target(r["phone"]):
                 db.x("UPDATE outbox SET status='failed', error=? WHERE id=?",
                      ("placeholder or missing phone number: set SMS_TEST_TO or a real number", r["id"]))
                 failed += 1
                 continue
-            if sms_left <= 0:      # protect a personal SIM from bulk sends / carrier blocking
+            if sms_left <= 0:
                 continue
             sms_left -= 1
         ok, err = _send_live(r)

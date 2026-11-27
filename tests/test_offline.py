@@ -30,7 +30,7 @@ def no_network(monkeypatch):
 
 @pytest.fixture(scope="module")
 def ops():
-    import app  # loads models from local files only
+    import app
     from dengue_watch.ops import forecast_bridge as FB
     FB.set_force_fallback(False)
     return app
@@ -54,15 +54,14 @@ def test_full_pipeline_offline(ops, no_network, tmp_path):
             assert D.sms(ctx, team, lang)["short"]
             assert D.whatsapp(ctx, team, lang)["text"]
         assert "<html" in D.brief_html(ctx, lang)
-    D.brief_pdf(ctx)                      # optional reportlab path must not crash either way
+    D.brief_pdf(ctx)
 
-    # DB + task generation + outbox + retry, all offline
     db.init_db()
     admin = db.user_by_name("admin")
     assert admin is not None
     res = tasks.generate(admin)
     assert res["wards"] == 60
-    r = notify.retry_queued()             # no live adapters -> no probe, no exception
+    r = notify.retry_queued()
     assert r["sent"] == 0
     assert no_network == [], f"network was attempted: {no_network[:3]}"
 
@@ -71,7 +70,7 @@ def test_live_adapter_configured_but_offline_never_raises(ops, no_network, monke
     from dengue_watch.ops import notify
     monkeypatch.setenv("TWILIO_SID", "x"); monkeypatch.setenv("TWILIO_TOKEN", "y"); monkeypatch.setenv("TWILIO_FROM", "+1")
     r = notify.retry_queued()
-    assert r["online"] is False and r["sent"] == 0   # probe failed cleanly, messages stay queued
+    assert r["online"] is False and r["sent"] == 0
 
 
 def test_broken_model_falls_back(ops, monkeypatch):

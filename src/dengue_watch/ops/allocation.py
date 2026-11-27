@@ -110,7 +110,6 @@ def allocate(wards: list[dict], stock_pct: float = 100, total_crews: int = C.DEF
             "crews_needed": crews_needed(w["risk"], dfac),
             "crews_assigned": 0,
         })
-    # deterministic priority order
     rows.sort(key=lambda r: (-r["priority_score"], r["ward_id"]))
     for i, r in enumerate(rows, 1):
         r["priority_rank"] = i
@@ -137,7 +136,6 @@ def allocate(wards: list[dict], stock_pct: float = 100, total_crews: int = C.DEF
                 r["allocated"][s] += give
                 left -= give
 
-    # crews: strict risk order, then priority
     risk_rank = {k: i for i, k in enumerate(C.RISK_ORDER)}
     crew_left = total_crews
     for r in sorted(rows, key=lambda r: (risk_rank.get(r["risk"], 9), -r["priority_score"], r["ward_id"])):

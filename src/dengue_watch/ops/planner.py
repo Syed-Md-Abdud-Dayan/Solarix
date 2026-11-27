@@ -17,7 +17,7 @@ def baseline_capacities() -> dict:
     dengue_cases with the verified dataset rule (see scripts/verify_onsite_dataset.py),
     so the runtime does not even need the onsite CSV to be present.
     """
-    df = FB.data().sort_values(["ward_id", "date"])   # pooled_capacities aligns weeks by position
+    df = FB.data().sort_values(["ward_id", "date"])
     rate = C.SUPPLY_RATES["hospital_beds"]
     static = FB.ward_static()
     wards = []

@@ -1,9 +1,3 @@
-/* Dengue Watch service worker - offline app shell + last good API responses.
- * Static files: network-first, falling back to the cache when the server is unreachable.
- * GET /api/*:   network-first with a 4 s timeout, falling back to the last cached response,
- *               so pages keep showing the last synced plan when the server is unreachable.
- * POST requests are never cached; the pages queue offline writes themselves (ops.js).
- */
 const VERSION = 'dw-onsite-v2';
 const SHELL = [
   '/', '/index.html', '/future.html', '/manifest.webmanifest',
@@ -40,7 +34,7 @@ self.addEventListener('fetch', (e) => {
         return res;
       } catch (err) {
         const hit = await cache.match(req);
-        if (hit) {   // mark it so the page can show the "offline - last synced" banner
+        if (hit) {
           const h = new Headers(hit.headers); h.set('X-DW-Offline', '1');
           return new Response(await hit.blob(), { status: hit.status, headers: h });
         }
@@ -51,7 +45,6 @@ self.addEventListener('fetch', (e) => {
   }
   e.respondWith((async () => {
     const cache = await caches.open(VERSION);
-    // Network-first: edits show up on a normal reload; the cache is only used when the server is unreachable.
     const res = await fetch(req, { cache: 'no-store' }).catch(() => null);
     if (res && res.ok) { cache.put(req, res.clone()); return res; }
     const hit = await cache.match(req, { ignoreSearch: true });
