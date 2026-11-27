@@ -1,0 +1,12 @@
+/* Self-hosted fonts (SIL Open Font License 1.1, files from fontsource). No CDN: works fully offline. */
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:400;font-display:swap;src:url(dm-sans-latin-400.woff2) format('woff2')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:500;font-display:swap;src:url(dm-sans-latin-500.woff2) format('woff2')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:600;font-display:swap;src:url(dm-sans-latin-600.woff2) format('woff2')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:700;font-display:swap;src:url(dm-sans-latin-700.woff2) format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:500;font-display:swap;src:url(manrope-latin-500.woff2) format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:600;font-display:swap;src:url(manrope-latin-600.woff2) format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:700;font-display:swap;src:url(manrope-latin-700.woff2) format('woff2')}
+@font-face{font-family:'Manrope';font-style:normal;font-weight:800;font-display:swap;src:url(manrope-latin-800.woff2) format('woff2')}
+@font-face{font-family:'Noto Sans Bengali';font-style:normal;font-weight:400;font-display:swap;src:url(noto-sans-bengali-bengali-400.woff2) format('woff2')}
+@font-face{font-family:'Noto Sans Bengali';font-style:normal;font-weight:600;font-display:swap;src:url(noto-sans-bengali-bengali-600.woff2) format('woff2')}
+@font-face{font-family:'Noto Sans Bengali';font-style:normal;font-weight:700;font-display:swap;src:url(noto-sans-bengali-bengali-700.woff2) format('woff2')}
