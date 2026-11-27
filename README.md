@@ -26,8 +26,17 @@ The dashboard is designed to help users explore where dengue risk may increase a
 - **Alerts and action planning:** Surface higher-risk wards and provide suggested follow-up actions.
 - **Long-range outlook:** Explore a seasonal forecast for 2026–2027.
 - **Bilingual assistant:** Ask Dengue Watch questions in English or Bangla.
+- **Animated start page:** A mosquito is swatted, then the message "ডেঙ্গুকে না বলুন" (Say no to dengue) appears before the dashboard opens. It plays once per browser session and is skipped for users who prefer reduced motion.
 
 ## Dashboard
+
+<p align="center">
+  <img src="docs/screenshots/intro.png" alt="Start page: a swatted mosquito and the Bangla message ডেঙ্গুকে না বলুন (Say no to dengue)" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/risk-prediction.png" alt="Ward-level risk prediction" width="100%">
+</p>
 
 <p align="center">
   <img src="docs/screenshots/risk-map.png" alt="Dengue Watch ward risk overview" width="100%">

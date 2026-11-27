@@ -73,6 +73,11 @@ tbody tr:hover{background:#f6f9f1}
 #toast{background:#173a28}
 .notice{background:#fbf6ea;border-color:#ead9b4}
 
+.acc-bar-p{fill:var(--teal)}.acc-bar-r{fill:var(--blue)}.acc-bar-f{fill:var(--amber)}
+.acc-cm .good{background:#e4f0df;color:#2b6a3f}.acc-cm .bad{background:#f8eedf;color:#9a5f22}
+.acc-controls label,.acc-cm .hd{color:#7b8d7d}
+tr.acc-sel{background:#eaf3e4}
+
 .rm-stat,.rm-side{border-color:#1f4a33;background:linear-gradient(135deg,#143323,#0a1a12);color:#e6f1e2}
 .rm-stat small,.rm-stat span{color:#93b39b}
 .rm-stage{border-color:#1f4a33;background:radial-gradient(ellipse at 50% 46%,#1d4a30 0,#10291c 42%,#07130d 100%)}
