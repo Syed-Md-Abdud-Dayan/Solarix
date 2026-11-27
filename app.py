@@ -495,6 +495,11 @@ class AppBackend:
 
 
 CHAT = ChatEngine(AppBackend())
+
+# Phase 2 operations platform (allocation, overflow, simulator, dispatch, roles).
+# All of it lives in src/dengue_watch/ops/; app.py only registers one hook per verb.
+from dengue_watch.ops import routes as OPS
+OPS.init(sys.modules[__name__])
 _RATE: dict = {}
 _RATE_LOCK = threading.Lock()
 RATE_LIMIT, RATE_WINDOW = 40, 60  
@@ -537,6 +542,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urlparse(self.path)
+        if OPS.handles(parsed.path):
+            return OPS.dispatch(self, "POST", parsed)
         try:
             if parsed.path != "/api/chat":
                 return self._send(404, {"error": "Not found"})
@@ -558,6 +565,8 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
+        if OPS.handles(parsed.path):
+            return OPS.dispatch(self, "GET", parsed)
         try:
             if parsed.path == "/api/health":
                 return self._send(200, health_payload())
@@ -585,7 +594,7 @@ class Handler(BaseHTTPRequestHandler):
             if WEB_DIR.resolve() not in target.parents and target != WEB_DIR.resolve():
                 return self._send(403, "Forbidden", "text/plain; charset=utf-8")
             if not target.is_file(): return self._send(404, "Not found", "text/plain; charset=utf-8")
-            types = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon"}
+            types = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon", ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".txt": "text/plain; charset=utf-8"}
             return self._send(200, target.read_bytes(), types.get(target.suffix, "application/octet-stream"))
         except ValueError as exc:
             return self._send(400, {"error": str(exc)})
