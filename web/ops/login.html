@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071b2c"><link rel="icon" type="image/png" href="/assets/img/favicon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Dengue Watch | Operations login</title>
+  <link rel="stylesheet" href="/assets/fonts/fonts.css"><link rel="stylesheet" href="/ops/ops.css">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="row" style="gap:12px"><img src="/assets/img/logo.png" alt="" width="42"><div><div class="eyebrow">DENGUE WATCH</div><h1 style="font:800 20px Manrope;margin:4px 0 0">Operations Command Center</h1></div></div>
+    <p class="muted small">Resource allocation, hospital overflow routing, vector-control simulation and dispatch for all 60 wards. Runs fully offline.</p>
+    <form id="f" class="grid" style="gap:12px">
+      <div><label class="f" for="u">Username</label><input id="u" autocomplete="username" required></div>
+      <div><label class="f" for="p">Password</label><input id="p" type="password" autocomplete="current-password" required></div>
+      <button class="btn primary" style="justify-content:center;padding:12px">Log in →</button>
+      <div id="err" class="small" style="color:#a12626"></div>
+    </form>
+    <div class="demo-acc">
+      <b>Demo accounts (DEMO ONLY - change via env vars in production)</b><br>
+      Password for all demo users: <code>demo1234</code> · admin: <code>admin1234</code><br>
+      <div style="margin-top:6px">
+        <button class="chip" data-u="admin">admin (super admin)</button>
+        <button class="chip" data-u="comm_dncc03">comm_dncc03 (commissioner)</button>
+        <button class="chip" data-u="sec_dncc03">sec_dncc03 (secretary)</button>
+        <button class="chip" data-u="spray_dncc">spray_dncc (spraying team)</button>
+        <button class="chip" data-u="saline_dncc">saline_dncc (saline team)</button>
+        <button class="chip" data-u="beds_dncc">beds_dncc (bed team)</button>
+        <button class="chip" data-u="hosp_dncc">hosp_dncc (hospital)</button>
+      </div>
+      <div class="muted" style="margin-top:6px">Pattern: comm_/sec_ + city code (dncc, dscc, ccc, gcc, ncc) + ward no. · teams: saline_/spray_/beds_/hosp_ + city code.</div>
+    </div>
+    <p class="small" style="margin-top:14px"><a href="/">← Public forecasting dashboard</a> · <a href="/api/ops/health">Offline self-check</a></p>
+  </div>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+document.querySelectorAll('.chip').forEach((c) => c.onclick = (e) => { e.preventDefault(); $('#u').value = c.dataset.u; $('#p').value = c.dataset.u === 'admin' ? 'admin1234' : 'demo1234'; });
+$('#f').onsubmit = async (e) => {
+  e.preventDefault(); $('#err').textContent = '';
+  try {
+    const r = await fetch('/api/ops/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+      body: JSON.stringify({ username: $('#u').value.trim(), password: $('#p').value }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Login failed');
+    localStorage.setItem('dw-csrf', d.csrf); localStorage.setItem('dw-me', JSON.stringify(d.user));
+    const next = new URLSearchParams(location.search).get('next');
+    location.href = next && next.startsWith('/ops/') ? next : d.user.home;
+  } catch (err) { $('#err').textContent = err.message === 'Failed to fetch' ? 'Server unreachable. If you logged in before, open your page directly - it works offline from cache.' : err.message; }
+};
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+</script>
+</body>
+</html>

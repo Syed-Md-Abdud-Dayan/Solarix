@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071b2c"><link rel="icon" type="image/png" href="/assets/img/favicon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Dengue Watch | Ward commissioner</title>
+  <link rel="stylesheet" href="/assets/fonts/fonts.css"><link rel="stylesheet" href="/ops/ops.css">
+</head>
+<body>
+<aside class="sidebar" id="side"></aside>
+<main>
+  <header class="topbar">
+    <div><span class="crumb">WARD COMMISSIONER</span><h1 id="title">Ward command</h1></div>
+    <div class="top-actions">
+      <select id="wardSel" class="hide" style="width:auto"></select>
+      <button class="btn primary" id="gen" data-i18n="Generate this week's plan">Generate this week's plan</button>
+      <button class="btn" id="send" data-i18n="Send / retry notices">Send / retry notices</button>
+      <a class="btn ghost" id="briefEn" target="_blank" data-i18n="Download brief">Download brief</a>
+      <a class="btn ghost" id="briefBn" target="_blank">ব্রিফ (বাংলা)</a>
+    </div>
+  </header>
+  <section class="content">
+    <div class="grid g4" id="kpis"></div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3 data-i18n="Forecast">Forecast</h3><p class="sub">Model forecast for the coming weeks; shaded band = ± held-out model error.</p><div id="chart"></div></div>
+      <div class="panel"><h3 data-i18n="Supplies">Supplies</h3><p class="sub">Required (dataset rule on forecast cases) vs allocated (regional scarcity engine).</p><div id="supplies"></div></div>
+    </div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3 data-i18n="Work completed">Work completed</h3><div id="progress"></div></div>
+      <div class="panel"><h3><span data-i18n="Beds">Beds</span> &amp; <span data-i18n="Transfers">Transfers</span></h3><div id="beds"></div></div>
+    </div>
+    <div class="panel mt">
+      <div class="row" style="justify-content:space-between"><div><h3 data-i18n="Tasks">Tasks</h3><p class="sub">Auto tasks come from the engines (Critical → High → Medium → Low). Override quantities with a reason, reassign or cancel; teams are notified automatically.</p></div>
+        <label class="row small"><input type="checkbox" id="showCancelled"> show cancelled</label></div>
+      <div id="tasks" class="grid" style="gap:10px"></div>
+      <details class="mt"><summary><b>+ Create manual task</b></summary>
+        <div class="controls mt"><div><label class="f">Type</label><select id="nType"><option value="other">other</option><option value="saline">saline</option><option value="spraying">spraying</option><option value="bed_routing">bed_routing</option></select></div>
+          <div><label class="f">Team</label><select id="nTeam"><option value="saline_team">Saline team</option><option value="spraying_team">Spraying team</option><option value="bed_team">Bed team</option></select></div>
+          <div style="grid-column:span 2"><label class="f">Description</label><input id="nDesc" placeholder="e.g. Clean blocked drain near ward market before Friday"></div>
+          <div><button class="btn primary" id="nGo">Create &amp; notify</button></div></div>
+      </details>
+    </div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3 data-i18n="Dispatch notices">Dispatch notices</h3><p class="sub">Generated offline from templates. Tap to send via WhatsApp / SMS (no API key needed).</p>
+        <div class="row"><button class="btn sm" data-lang="en">English</button><button class="btn sm" data-lang="bn">বাংলা</button></div><div id="notices" class="grid mt" style="gap:8px"></div></div>
+      <div class="panel"><h3 data-i18n="Activity">Activity</h3><div id="activity" class="tablewrap" style="max-height:420px"></div></div>
+    </div>
+  </section>
+</main>
+<script src="/ops/ops.js"></script>
+<script src="/ops/commissioner.js"></script>
+</body>
+</html>

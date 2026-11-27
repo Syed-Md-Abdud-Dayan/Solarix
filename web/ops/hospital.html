@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071b2c"><link rel="icon" type="image/png" href="/assets/img/favicon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Dengue Watch | Hospital portal</title>
+  <link rel="stylesheet" href="/assets/fonts/fonts.css"><link rel="stylesheet" href="/ops/ops.css">
+</head>
+<body>
+<aside class="sidebar" id="side"></aside>
+<main>
+  <header class="topbar">
+    <div><span class="crumb">HOSPITAL / HEALTH CENTRE MANAGER</span><h1 id="title">Hospital portal</h1></div>
+    <div class="top-actions"><span class="muted small" id="week"></span></div>
+  </header>
+  <section class="content">
+    <div class="panel"><h3>City bed pool</h3><p class="sub" id="capNote"></p><div class="grid g4" id="gauges" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div></div>
+    <div class="grid g2 mt">
+      <div class="panel"><h3>Transfer requests</h3><p class="sub">Overflow patients routed to your wards (same city only). Accept or decline with a reason.</p><div id="transfers" class="grid" style="gap:8px"></div></div>
+      <div class="panel"><h3>Bed demand forecast (next 4 weeks)</h3><p class="sub">Beds = verified dataset rule applied to predicted cases (shown in brackets).</p><div class="tablewrap" style="max-height:420px"><table id="fc"></table></div></div>
+    </div>
+    <div class="panel mt"><h3>Update real capacity &amp; occupancy</h3><p class="sub">The baseline capacity is an ASSUMPTION (no capacity column in the dataset). Enter your real staffed beds and current occupancy; routing is recomputed immediately.</p>
+      <div class="tablewrap"><table id="cap"></table></div></div>
+  </section>
+</main>
+<script src="/ops/ops.js"></script>
+<script>
+(async function () {
+  const { $, $$, esc, fmt, badge } = DW;
+  const me = await DW.boot(['hospital', 'super_admin', 'bed_team']);
+  if (!me) return;
+  $('#title').textContent = me.city ? `Hospital portal · ${me.city}` : 'Hospital portal (all cities)';
+  async function load() {
+    let h; try { h = await DW.api('/api/ops/hospital'); } catch (e) { return; }
+    $('#week').textContent = `planning week ${h.week} (data to ${h.origin})`;
+    $('#capNote').textContent = h.capacity_note;
+    const o = h.overflow;
+    $('#gauges').innerHTML = o.cities.map((c) => `<div>${DW.gauge(c.utilisation_pct, c.city)}<div class="small muted" style="text-align:center">${c.bed_demand} / ${c.capacity} beds · ${c.surge ? '<b style="color:#a12626">CITY SURGE ' + c.unresolved_deficit + '</b>' : 'headroom ' + c.headroom_after_routing}</div></div>`).join('') +
+      o.alerts.map((a) => `<div class="warnlist"><div class="CRITICAL">${esc(a.message)}</div></div>`).join('');
+    $('#transfers').innerHTML = h.transfers.length ? h.transfers.map((t) => `<div class="card-task"><div class="hd"><div class="transfer" style="flex:1;border:0;padding:0"><b>${esc(t.from_ward)}</b><span class="arrow"></span><b>${esc(t.to_ward)}</b><span class="badge RECEIVING">${t.patients} patient(s)</span></div>${badge(t.status)}</div>
+        ${t.status === 'pending' ? `<div class="row"><button class="btn sm primary" data-acc="${t.id}" data-i18n="Accept">${DW.t('Accept')}</button><input placeholder="Reason if declining" data-reason="${t.id}" style="flex:1"><button class="btn sm danger" data-dec="${t.id}" data-i18n="Decline">${DW.t('Decline')}</button></div>`
+        : `<div class="small muted">${esc(t.decided_by || '')} ${esc(t.reason || '')}</div>`}</div>`).join('') : '<p class="muted">No transfer requests yet (they appear after the commissioner / admin generates the plan).</p>';
+    $$('[data-acc]').forEach((b) => b.onclick = () => decide(b.dataset.acc, 'accept'));
+    $$('[data-dec]').forEach((b) => b.onclick = () => decide(b.dataset.dec, 'decline', $(`[data-reason="${b.dataset.dec}"]`).value));
+    $('#fc').innerHTML = '<tr><th>Ward</th>' + [1, 2, 3, 4].map((h) => `<th class="num">+${h}w beds</th>`).join('') + '</tr>' +
+      Object.entries(h.trends).map(([w, tr]) => `<tr><td>${esc(w)}</td>${tr.map((t) => `<td class="num">${t.beds} <span class="small muted">(${fmt(t.predicted_cases, 1)})</span></td>`).join('')}</tr>`).join('');
+    $('#cap').innerHTML = '<tr><th>Ward</th><th class="num">Bed demand</th><th>Capacity</th><th>Occupied (other patients)</th><th class="num">Net deficit</th><th class="num">Headroom</th><th>Status</th><th></th></tr>' +
+      o.wards.map((w) => `<tr><td><b>${esc(w.ward_id)}</b><br><span class="small muted">${esc(w.city)}${w.capacity_overridden ? ' · real value' : ' · assumed'}</span></td><td class="num">${w.bed_demand}</td>
+        <td><input type="number" min="0" value="${w.capacity}" data-c="${esc(w.ward_id)}" style="width:80px"></td><td><input type="number" min="0" value="${w.occupied}" data-o="${esc(w.ward_id)}" style="width:80px"></td>
+        <td class="num">${w.net_deficit}</td><td class="num">${w.remaining_headroom}</td><td>${badge(w.status)}</td><td><button class="btn sm" data-save="${esc(w.ward_id)}" data-i18n="Save">${DW.t('Save')}</button></td></tr>`).join('');
+    $$('[data-save]').forEach((b) => b.onclick = async () => {
+      const id = b.dataset.save;
+      try { await DW.api('/api/ops/capacity', { method: 'POST', body: { ward_id: id, capacity: $(`[data-c="${id}"]`).value, occupied: $(`[data-o="${id}"]`).value } }); DW.toast('Capacity saved - routing recomputed'); load(); } catch (e) { DW.toast(e.message); }
+    });
+  }
+  async function decide(id, decision, reason) {
+    try { await DW.api(`/api/ops/transfers/${id}`, { method: 'POST', body: { decision, reason } }); DW.toast('Transfer ' + decision + 'ed'); load(); } catch (e) { DW.toast(e.message); }
+  }
+  DW.refresh = load; DW.onLang = load;
+  load();
+})();
+</script>
+</body>
+</html>

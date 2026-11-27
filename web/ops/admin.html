@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071b2c"><link rel="icon" type="image/png" href="/assets/img/favicon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Dengue Watch | Regional command</title>
+  <link rel="stylesheet" href="/assets/fonts/fonts.css"><link rel="stylesheet" href="/ops/ops.css">
+</head>
+<body>
+<aside class="sidebar" id="side"></aside>
+<main>
+  <header class="topbar">
+    <div><span class="crumb">REGIONAL COMMAND (SUPER ADMIN)</span><h1>Resource allocation, overflow, simulation &amp; dispatch</h1></div>
+    <div class="top-actions"><span class="badge model" id="srcTag">MODEL</span><span class="muted small" id="weekTag"></span></div>
+  </header>
+  <section class="content">
+    <div class="tabs" id="tabs">
+      <button data-t="alloc" class="on" data-i18n="Allocation">Allocation</button>
+      <button data-t="overflow" data-i18n="Hospital overflow">Hospital overflow</button>
+      <button data-t="sim" data-i18n="Simulator">Simulator</button>
+      <button data-t="ops" data-i18n="Operations">Operations</button>
+      <button data-t="audit" data-i18n="Audit log">Audit log</button>
+      <button data-t="settings" data-i18n="Settings">Settings</button>
+    </div>
+
+    <!-- ============ ALLOCATION ============ -->
+    <div data-tab="alloc">
+      <div class="panel">
+        <div class="row" style="justify-content:space-between"><div><span class="eyebrow">Requirement 1 · constrained resource allocation engine</span><h3>Scarcity controls (live recompute)</h3></div>
+          <div class="row"><label class="row small"><input type="checkbox" id="cmp"> Before / after (vs 100% stock)</label><button class="btn primary" id="applyLive">Apply as live plan</button></div></div>
+        <div class="controls mt">
+          <div><label class="f">Available regional stock: <b id="stockV">100%</b></label><input type="range" id="stock" min="30" max="100" step="5" value="100"></div>
+          <div><label class="f">Total spraying crews: <b id="crewsV">60</b></label><input type="range" id="crews" min="0" max="150" step="1" value="60"></div>
+          <div><label class="f">Safety buffer: <b id="bufV">0%</b></label><input type="range" id="buf" min="0" max="30" step="5" value="0"></div>
+          <div><label class="f">Planning week</label><select id="hz"><option value="1">Upcoming week (+1)</option><option value="2">+2 weeks</option><option value="3">+3 weeks</option><option value="4">+4 weeks</option></select></div>
+          <div><label class="f">Equity guard</label><label class="row small"><input type="checkbox" id="eq" checked> Guaranteed floor for Critical / High</label></div>
+        </div>
+      </div>
+      <div class="grid g4 mt" id="allocKpis"></div>
+      <div class="grid g2 mt">
+        <div class="panel"><h3>Live critical supply-deficit warnings</h3><p class="sub">Wards that cannot be 100% fulfilled at this stock level, worst first.</p><div class="warnlist" id="warns"></div></div>
+        <div class="panel"><h3>Equity guard &amp; replenishment</h3><p class="sub">Who was shorted (by risk band) and how much extra stock each city should request.</p><div id="equity"></div></div>
+      </div>
+      <div class="panel mt"><h3>All 60 wards ranked by priority</h3><p class="sub">priority = risk weight × (predicted cases + 0.5) × √(density / median density). Greedy fill in this order after the equity floor. ± = held-out model error.</p>
+        <div class="tablewrap"><table id="allocTbl"></table></div></div>
+    </div>
+
+    <!-- ============ OVERFLOW ============ -->
+    <div data-tab="overflow" class="hide">
+      <div class="panel"><span class="eyebrow">Requirement 2 · hospital surge &amp; cross-ward overflow routing</span><h3>City bed pools (routing never crosses cities)</h3>
+        <p class="sub" id="capNote"></p><div class="grid g4" id="gauges" style="grid-template-columns:repeat(5,minmax(0,1fr))"></div></div>
+      <div class="grid g2 mt">
+        <div class="panel"><h3>Overflow transfers</h3><p class="sub">Each patient goes to the lowest-utilisation ward with headroom in the same city.</p><div id="transfers" class="grid" style="gap:6px"></div><div id="surges" class="warnlist mt"></div></div>
+        <div class="panel"><h3>Ward bed balance</h3><div class="tablewrap" style="max-height:440px"><table id="bedTbl"></table></div></div>
+      </div>
+    </div>
+
+    <!-- ============ SIMULATOR ============ -->
+    <div data-tab="sim" class="hide">
+      <div class="panel"><span class="eyebrow">Requirement 3 · model-driven what-if vector control simulator</span><h3>Deploy limited larvicide / fogging crews</h3>
+        <p class="sub">Each crew raises coverage (saturating); larviciding scales the ward's recent breeding-rainfall and fogging its recent transmission inputs, then the 2-, 3- and 4-week ML models are re-run. Effects therefore differ by ward, week and crew count.</p>
+        <div class="controls"><div><label class="f">Crews available</label><input type="number" id="simCrews" min="0" max="240" value="10"></div>
+          <div><button class="btn primary" id="simGo">Recommend best deployment</button></div>
+          <div><button class="btn" id="simMine">Simulate my edited deployment</button></div>
+          <div class="muted small" id="simInfo"></div></div>
+      </div>
+      <div class="grid g3 mt" id="simCompare"></div>
+      <div class="grid g2 mt">
+        <div class="panel"><h3>Weeks +2 to +4: baseline vs intervention</h3><div id="simWeeks"></div></div>
+        <div class="panel"><h3>ROI ranking (cases prevented by 1 crew)</h3><div id="roiChart"></div></div>
+      </div>
+      <div class="panel mt"><h3>Deployment &amp; ROI per ward</h3><p class="sub">Edit crew numbers, then "Simulate my edited deployment".</p><div class="tablewrap"><table id="simTbl"></table></div></div>
+    </div>
+
+    <!-- ============ OPERATIONS ============ -->
+    <div data-tab="ops" class="hide">
+      <div class="panel"><div class="row" style="justify-content:space-between"><div><span class="eyebrow">Requirement 4 · dispatch &amp; task lifecycle</span><h3>Region-wide plan</h3></div>
+        <div class="row"><button class="btn primary" id="genAll" data-i18n="Generate this week's plan">Generate this week's plan</button><button class="btn" id="retry" data-i18n="Send / retry notices">Send / retry notices</button>
+        <a class="btn ghost" href="/api/ops/briefs?lang=en" target="_blank">Print all briefs (EN)</a><a class="btn ghost" href="/api/ops/briefs?lang=bn" target="_blank">সব ব্রিফ (BN)</a></div></div>
+        <div id="genOut" class="small muted mt"></div></div>
+      <div class="grid g4 mt" id="progKpis"></div>
+      <div class="grid g2 mt">
+        <div class="panel"><h3>Completion by city</h3><div id="cityProg"></div></div>
+        <div class="panel"><h3>Lagging wards leaderboard</h3><div id="lagging"></div></div>
+      </div>
+      <div class="grid g2 mt">
+        <div class="panel"><h3>Escalations (unacknowledged / overdue / blocked)</h3><div id="esc" class="warnlist"></div></div>
+        <div class="panel"><h3>Outbox &amp; exports</h3><div id="outbox"></div>
+          <div class="row mt"><a class="btn sm" href="/api/ops/export/allocation.csv">Allocation CSV</a><a class="btn sm" href="/api/ops/export/overflow.csv">Overflow CSV</a><a class="btn sm" href="/api/ops/export/tasks.csv">Tasks CSV</a><a class="btn sm" href="/api/ops/export/dispatch.csv">Dispatch log CSV</a><a class="btn sm" href="/api/ops/export/allocation.json">Allocation JSON</a></div></div>
+      </div>
+    </div>
+
+    <!-- ============ AUDIT ============ -->
+    <div data-tab="audit" class="hide"><div class="panel"><h3>Audit log</h3><p class="sub">Who generated, changed, overrode or sent what, and when.</p><div class="tablewrap"><table id="auditTbl"></table></div></div></div>
+
+    <!-- ============ SETTINGS ============ -->
+    <div data-tab="settings" class="hide">
+      <div class="grid g2">
+        <div class="panel"><h3>Planning origin &amp; thresholds</h3>
+          <div class="controls"><div><label class="f">Forecast from (data week)</label><input type="date" id="sOrigin" min="2016-10-10" max="2025-12-29"></div>
+            <div><label class="f">Escalate if not acknowledged after (hours)</label><input type="number" id="sEsc" min="0" step="1"></div></div>
+          <div class="row mt small"><span class="muted">Presets:</span><button class="chip" data-o="2025-08-04">Peak season 2025</button><button class="chip" data-o="2024-07-15">Monsoon 2024</button><button class="chip" data-o="2025-12-29">Latest data week (off-season)</button></div>
+          <h3 class="mt">Absolute regional stock at 100% (override)</h3><p class="sub">Empty = peak-week demand of the 4-week window (default).</p>
+          <div class="controls"><div><label class="f">Saline bags</label><input type="number" id="ovS" min="0"></div><div><label class="f">Diagnostic kits</label><input type="number" id="ovK" min="0"></div><div><label class="f">Hospital beds</label><input type="number" id="ovB" min="0"></div></div>
+          <button class="btn primary mt" id="saveSettings" data-i18n="Save">Save</button></div>
+        <div class="panel"><h3>Resilience switches (live demo)</h3>
+          <label class="row"><input type="checkbox" id="sFallback"> <b>Model kill-switch:</b> force the deterministic seasonal fallback forecast</label>
+          <p class="sub">Simulates a missing/corrupt model file. Every engine keeps working; outputs are flagged "fallback".</p>
+          <label class="row"><input type="checkbox" id="sOffline"> <b>Server internet kill-switch:</b> treat the internet as down for notification delivery</label>
+          <p class="sub">Live SMS/WhatsApp adapters stop; messages stay queued in the outbox, in-app delivery continues.</p>
+          <p class="sub">The sidebar "Offline kill-switch demo" simulates the browser losing the server entirely (cached plan + offline action queue). Turning off Wi-Fi does the same for real.</p>
+          <div id="health" class="mt"></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/ops/ops.js"></script>
+<script src="/ops/admin.js"></script>
+</body>
+</html>

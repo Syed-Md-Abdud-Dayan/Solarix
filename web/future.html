@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <title>Dengue Watch | Future forecast (2026 and beyond)</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts/fonts.css"><link rel="manifest" href="manifest.webmanifest">
 <style>
 :root{--navy:#071b2c;--ink:#132b3b;--muted:#718392;--line:#e5edf0;--bg:#f4f7f8;--teal:#0c9b83;--blue:#2f78b8;--amber:#e0a02d;--red:#c0392b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 'DM Sans',system-ui,sans-serif}
@@ -150,5 +150,6 @@ $('go').onclick = run;
 document.querySelectorAll('.chips button').forEach(b => b.onclick = () => { $('start').value=b.dataset.s; $('end').value=b.dataset.e; run(); });
 init();
 </script>
+<script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));</script>
 </body>
 </html>

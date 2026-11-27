@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071b2c"><link rel="icon" type="image/png" href="/assets/img/favicon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <title>Dengue Watch | Team panel</title>
+  <link rel="stylesheet" href="/assets/fonts/fonts.css"><link rel="stylesheet" href="/ops/ops.css">
+</head>
+<body>
+<aside class="sidebar" id="side"></aside>
+<main>
+  <header class="topbar">
+    <div><span class="crumb">PHASE 2 · FIELD TEAM</span><h1 id="title">Team panel</h1></div>
+    <div class="top-actions"><button class="btn ghost" id="notifBtn">🔔 Enable alerts</button><button class="btn" id="refresh">↻</button></div>
+  </header>
+  <section class="content">
+    <div class="tabs" id="tabs"><button data-t="tasks" class="on"><span data-i18n="My tasks">My tasks</span></button><button data-t="inbox"><span data-i18n="Inbox">Inbox</span><span class="pill-count hide" id="unread"></span></button></div>
+    <div data-tab="tasks">
+      <div class="grid g4" id="kpis"></div>
+      <p class="small muted mt" id="orderNote"></p>
+      <div id="tasks" class="grid" style="gap:10px"></div>
+    </div>
+    <div data-tab="inbox" class="hide">
+      <div class="row" style="justify-content:space-between"><p class="sub">Messages from the commissioner / secretary. In-app delivery works offline.</p><button class="btn sm" id="readAll">Mark all read</button></div>
+      <div id="inbox" class="grid" style="gap:8px"></div>
+    </div>
+  </section>
+</main>
+<script src="/ops/ops.js"></script>
+<script>
+(async function () {
+  const { $, $$, esc, fmt, badge, bar } = DW;
+  const me = await DW.boot(['saline_team', 'spraying_team', 'bed_team', 'super_admin']);
+  if (!me) return;
+  let tab = 'tasks', lastUnread = null;
+  $('#title').textContent = `${me.display_name || me.username}`;
+  $$('#tabs button').forEach((b) => b.onclick = () => { tab = b.dataset.t; $$('#tabs button').forEach((x) => x.classList.toggle('on', x === b)); $$('[data-tab]').forEach((p) => p.classList.toggle('hide', p.dataset.tab !== tab)); });
+
+  function body(t) {
+    const p = t.payload || {};
+    if (t.type === 'saline') return `<div style="font-size:15px">Deliver <b>${p.saline_bags}</b> saline bags (need ${p.saline_required}) and <b>${p.diagnostic_kits}</b> diagnostic kits (need ${p.kits_required})</div>
+      ${p.deficit_level && p.deficit_level !== 'OK' ? `<div class="small" style="color:#a12626">Regional shortage: ${fmt(p.fulfilment_pct)}% of demand can be supplied</div>` : ''}<div class="small muted">Forecast ${fmt(p.predicted_cases, 1)} cases this week</div>`;
+    if (t.type === 'spraying') return `<div style="font-size:15px">Deploy <b>${p.crews_assigned}</b> crew(s) (need ${p.crews_needed}) · larvicide + fogging</div><div class="small muted">Density ${fmt(p.density)}/km² · forecast ${fmt(p.predicted_cases, 1)} cases</div>`;
+    if (t.type === 'bed_routing') return `<div style="font-size:15px">Beds needed <b>${p.bed_demand}</b> · local capacity ${p.capacity} · net deficit <b>${p.net_deficit}</b></div>
+      ${(p.send || []).map((s) => `<div class="transfer"><b>${esc(t.ward_id)}</b><span class="arrow"></span><b>${esc(s.to)}</b><span class="badge SENDING">${s.patients} pt</span></div>`).join('')}
+      ${(p.receive || []).map((s) => `<div class="transfer"><b>${esc(s.from)}</b><span class="arrow"></span><b>${esc(t.ward_id)}</b><span class="badge RECEIVING">${s.patients} pt</span></div>`).join('')}`;
+    return esc(p.description || '');
+  }
+  const proofField = { saline: ['delivered_qty', 'Saline bags delivered'], spraying: ['houses_sprayed', 'Houses / sites treated'], bed_routing: ['beds_arranged', 'Beds arranged'], other: ['quantity', 'Quantity'] };
+
+  async function loadTasks() {
+    let tl; try { tl = await DW.api('/api/ops/tasks'); } catch (e) { return; }
+    const ts = tl.tasks;
+    const open = ts.filter((t) => t.status !== 'done').length;
+    const done = ts.length - open, pct = ts.length ? 100 * done / ts.length : 0;
+    $('#kpis').innerHTML = `<div class="kpi"><span class="eyebrow">Open tasks</span><b>${open}</b></div><div class="kpi"><span class="eyebrow" data-i18n="Work completed">${DW.t('Work completed')}</span><b>${fmt(pct)}%</b>${bar(pct)}</div>
+      <div class="kpi"><span class="eyebrow">Escalated</span><b>${ts.filter((t) => t.escalated).length}</b></div><div class="kpi"><span class="eyebrow">Week</span><b style="font-size:16px">${esc(ts[0]?.week || '–')}</b></div>`;
+    $('#orderNote').textContent = me.role === 'spraying_team' ? 'Spray in this order: Critical → High → Medium → Low, denser wards first within a band (sequence number on the left).' : 'Tasks are ordered by risk: Critical first.';
+    $('#tasks').innerHTML = ts.length ? ts.map((t) => {
+      const [pf, pl] = proofField[t.type] || proofField.other;
+      return `<div class="card-task ${t.escalated ? 'esc' : ''}">
+        <div class="hd"><div class="row"><span class="seq">${t.type === 'spraying' ? (t.sequence ?? '•') : '•'}</span><div><b>${esc(t.ward_id)}</b> <span class="small muted">#${t.id} · ${esc(DW.t(t.type))}</span><br>${badge(t.risk)} ${badge(t.status)} ${t.escalations.map((e) => badge(e, e.replace('_', ' '))).join(' ')}</div></div>
+          <span class="small muted">due ${esc((t.due_at || '').slice(0, 10))}</span></div>
+        ${body(t)}
+        <div class="row">
+          <button class="btn sm" data-s="acknowledged" data-id="${t.id}" ${t.status !== 'assigned' ? 'disabled' : ''} data-i18n="Acknowledge">${DW.t('Acknowledge')}</button>
+          <button class="btn sm" data-s="in_progress" data-id="${t.id}" ${['in_progress', 'done'].includes(t.status) ? 'disabled' : ''} data-i18n="Start">${DW.t('Start')}</button>
+          <button class="btn sm primary" data-s="done" data-id="${t.id}" ${t.status === 'done' ? 'disabled' : ''} data-i18n="Done">${DW.t('Done')}</button>
+          <button class="btn sm warn" data-s="blocked" data-id="${t.id}" ${t.status === 'done' ? 'disabled' : ''} data-i18n="Blocked">${DW.t('Blocked')}</button>
+        </div>
+        <div class="row"><input type="number" min="0" placeholder="${pl}" data-proof="${t.id}" data-pf="${pf}" style="max-width:190px"><input placeholder="Note (optional)" data-note="${t.id}" value="${esc(t.note || '')}" style="flex:1;min-width:160px"><button class="btn sm" data-savenote="${t.id}" data-i18n="Save note">${DW.t('Save note')}</button></div>
+      </div>`;
+    }).join('') : '<p class="muted">No tasks assigned yet. You will be notified here when the commissioner generates the plan.</p>';
+    $$('[data-s]').forEach((b) => b.onclick = () => send(+b.dataset.id, { status: b.dataset.s }));
+    $$('[data-savenote]').forEach((b) => b.onclick = () => send(+b.dataset.savenote, {}));
+  }
+  async function send(id, changes) {
+    const note = $(`[data-note="${id}"]`).value, pr = $(`[data-proof="${id}"]`);
+    if (note) changes.note = note;
+    if (pr.value) changes.proof = { [pr.dataset.pf]: +pr.value };
+    if (!Object.keys(changes).length) return DW.toast('Nothing to save');
+    try { const r = await DW.act({ type: 'task_update', id, changes }); if (!r.queued) DW.toast('Saved'); loadTasks(); } catch (e) { DW.toast(e.message); }
+  }
+
+  async function loadInbox() {
+    let d; try { d = await DW.api('/api/ops/inbox'); } catch (e) { return; }
+    const u = $('#unread'); u.textContent = d.unread; u.classList.toggle('hide', !d.unread);
+    if (lastUnread !== null && d.unread > lastUnread) {
+      DW.toast(`${d.unread - lastUnread} new task notice(s)`);
+      if (window.Notification && Notification.permission === 'granted') new Notification('Dengue Watch', { body: `${d.unread - lastUnread} new task notice(s)` });
+      loadTasks();
+    }
+    lastUnread = d.unread;
+    $('#inbox').innerHTML = d.messages.length ? d.messages.map((m) => `<div class="msg ${m.unread ? 'unread' : ''}" data-read="${m.id}">
+      <div class="row" style="justify-content:space-between"><b>${esc(m.ward_id)} · ${esc(m.team)}${m.task_status ? ' · ' + badge(m.task_status) : ''}</b><span class="small muted">${esc((m.created_at || '').replace('T', ' ').slice(0, 16))}</span></div>${esc(m.body)}
+      ${d.links[m.dispatch_id] ? `<div class="row mt"><a class="btn sm" href="${esc(d.links[m.dispatch_id])}" target="_blank" rel="noopener">Open in app ↗</a></div>` : ''}</div>`).join('') : '<p class="muted">Inbox empty.</p>';
+    $$('[data-read]').forEach((el) => el.onclick = () => { if (el.classList.contains('unread')) { el.classList.remove('unread'); DW.act({ type: 'inbox_read', id: +el.dataset.read }).then(loadInbox); } });
+  }
+  $('#readAll').onclick = async () => { try { await DW.api('/api/ops/inbox/all/read', { method: 'POST', body: {} }); loadInbox(); } catch (e) { DW.toast('Offline - try again later'); } };
+  $('#notifBtn').onclick = () => { if (window.Notification) Notification.requestPermission().then((p) => DW.toast('Alerts: ' + p)); };
+  $('#refresh').onclick = () => DW.refresh();
+  DW.refresh = () => { loadTasks(); loadInbox(); };
+  DW.onLang = loadTasks;
+  DW.refresh();
+  setInterval(() => { if (!document.hidden) loadInbox(); }, 20000);
+})();
+</script>
+</body>
+</html>
