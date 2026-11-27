@@ -7,8 +7,12 @@ Every notice is FIRST written to the `outbox` table, then delivered by adapters:
   2. whatsapp  - a wa.me click-to-send deep link is always attached (no API key needed);
                  optional live send via WhatsApp Cloud API when WHATSAPP_TOKEN and
                  WHATSAPP_PHONE_ID are set.
-  3. sms       - an sms: deep link is always attached; optional live send via Twilio when
-                 TWILIO_SID / TWILIO_TOKEN / TWILIO_FROM are set.
+  3. sms       - an sms: deep link is always attached; optional live send from your own SIM
+                 through the "SMS Gateway for Android" app (sms-gate.app) when SMSGATE_USER /
+                 SMSGATE_PASSWORD are set (SMSGATE_URL: phone's local http://<ip>:8080/message,
+                 default = the app's cloud relay), or via Twilio when TWILIO_SID / TWILIO_TOKEN /
+                 TWILIO_FROM are set. Safety: SMS_TEST_TO redirects every SMS to one number, demo
+                 placeholder numbers are never texted, SMS_MAX_PER_RUN caps sends per retry (default 20).
   4. telegram  - optional mirror of every notice into an ops group (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID).
   5. email     - optional mirror to an ops mailbox via smtplib (SMTP_HOST, SMTP_TO, SMTP_USER, SMTP_PASSWORD, SMTP_FROM).
   6. file      - always writes the text to exports/runtime/ (judges can inspect offline).
@@ -30,13 +34,36 @@ from .dispatch import deep_links
 ROOT = Path(__file__).resolve().parents[3]
 RUNTIME_DIR = Path(os.getenv("OPS_EXPORT_DIR", ROOT / "exports/runtime"))
 OFFLINE_SIM = {"on": False}       # admin "kill-switch demo": behave as if there is no internet
+SMSGATE_CLOUD_URL = "https://api.sms-gate.app/3rdparty/v1/messages"
+PLACEHOLDER_PREFIX = "+8801700000"   # db.fake_phone(): demo seed numbers, may belong to real people
+
+
+def _smsgate() -> bool:
+    return bool(os.getenv("SMSGATE_USER") and os.getenv("SMSGATE_PASSWORD"))
+
+
+def _twilio() -> bool:
+    return bool(os.getenv("TWILIO_SID") and os.getenv("TWILIO_TOKEN") and os.getenv("TWILIO_FROM"))
+
+
+def sms_target(phone: str | None) -> str | None:
+    """Number an SMS really goes to: SMS_TEST_TO overrides; demo placeholders are never texted."""
+    test_to = os.getenv("SMS_TEST_TO", "").strip()
+    if test_to:
+        return test_to
+    phone = (phone or "").strip()
+    if not phone or phone.startswith(PLACEHOLDER_PREFIX):
+        return None
+    if phone.startswith("01") and len(phone) == 11:      # local Bangladesh format -> E.164
+        phone = "+88" + phone
+    return phone
 
 
 def live_adapters() -> list[str]:
     out = []
     if os.getenv("WHATSAPP_TOKEN") and os.getenv("WHATSAPP_PHONE_ID"):
         out.append("whatsapp")
-    if os.getenv("TWILIO_SID") and os.getenv("TWILIO_TOKEN") and os.getenv("TWILIO_FROM"):
+    if _smsgate() or _twilio():
         out.append("sms")
     if os.getenv("TELEGRAM_BOT_TOKEN") and os.getenv("TELEGRAM_CHAT_ID"):
         out += ["telegram"] + [c for c in ("sms", "whatsapp") if c not in out]
@@ -105,12 +132,23 @@ def _send_live(row: dict) -> tuple[bool, str]:
                 headers={"Authorization": f"Bearer {os.getenv('WHATSAPP_TOKEN')}", "Content-Type": "application/json"})
             urllib.request.urlopen(req, timeout=5).read()
             return True, ""
-        if ch == "sms" and "sms" in live_adapters():
+        if ch == "sms" and (_smsgate() or _twilio()):
             import base64
             import urllib.parse
             import urllib.request
+            to = sms_target(row["phone"])
+            if not to:
+                return False, "placeholder or missing phone number: set SMS_TEST_TO or a real number"
+            if _smsgate():     # your own SIM, through the SMS Gateway for Android app
+                cred = base64.b64encode(f"{os.getenv('SMSGATE_USER')}:{os.getenv('SMSGATE_PASSWORD')}".encode()).decode()
+                req = urllib.request.Request(
+                    os.getenv("SMSGATE_URL", SMSGATE_CLOUD_URL),
+                    data=json.dumps({"textMessage": {"text": row["body"][:1500]}, "phoneNumbers": [to]}).encode("utf-8"),
+                    headers={"Authorization": "Basic " + cred, "Content-Type": "application/json"})
+                urllib.request.urlopen(req, timeout=10).read()
+                return True, ""
             sid = os.getenv("TWILIO_SID")
-            data = urllib.parse.urlencode({"To": row["phone"], "From": os.getenv("TWILIO_FROM"), "Body": row["body"][:1500]}).encode()
+            data = urllib.parse.urlencode({"To": to, "From": os.getenv("TWILIO_FROM"), "Body": row["body"][:1500]}).encode()
             req = urllib.request.Request(f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json", data=data)
             req.add_header("Authorization", "Basic " + base64.b64encode(f"{sid}:{os.getenv('TWILIO_TOKEN')}".encode()).decode())
             urllib.request.urlopen(req, timeout=5).read()
@@ -155,10 +193,14 @@ def retry_queued(limit: int = 200) -> dict:
     if not is_online:
         return {"attempted": 0, "sent": 0, "still_queued": len(rows), "online": False,
                 "note": "Offline: messages kept in the outbox; in-app delivery already done. Retry when back online."}
-    sent = 0
+    sent, sms_left = 0, int(os.getenv("SMS_MAX_PER_RUN", "20"))
     for r in rows:
         if r["channel"] not in adapters:
             continue
+        if r["channel"] == "sms":
+            if sms_left <= 0:      # protect a personal SIM from bulk sends / carrier blocking
+                continue
+            sms_left -= 1
         ok, err = _send_live(r)
         db.x("UPDATE outbox SET status=?, error=?, attempts=attempts+1, sent_at=? WHERE id=?",
              ("sent" if ok else "queued", err, db.now() if ok else None, r["id"]))
