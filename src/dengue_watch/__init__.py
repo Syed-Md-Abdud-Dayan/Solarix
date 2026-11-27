@@ -1,2 +1,1 @@
-"""Dengue Watch forecasting package."""
-__version__ = "1.0.0"
+"""Phase 2 operations: allocation, overflow routing, what-if simulation, dispatch, roles."""
