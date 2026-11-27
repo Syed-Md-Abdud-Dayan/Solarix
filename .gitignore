@@ -5,3 +5,13 @@ venv/
 .env
 .pytest_cache/
 artifacts/tmp/
+# Phase 2 runtime / local-only files
+data/ops.db
+data/ops.db-*
+*.sqlite3
+*.xlsx
+*.mp4
+*.mkv
+*.mov
+.env.*
+exports/runtime/
