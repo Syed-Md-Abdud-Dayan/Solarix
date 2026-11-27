@@ -15,3 +15,5 @@ data/ops.db-*
 *.mov
 .env.*
 exports/runtime/
+data/ops - Copy.db*
+.vscode/
