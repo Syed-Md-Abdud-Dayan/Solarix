@@ -144,7 +144,10 @@ def _send_live(row: dict) -> tuple[bool, str]:
                 req = urllib.request.Request(
                     os.getenv("SMSGATE_URL", SMSGATE_CLOUD_URL),
                     data=json.dumps({"textMessage": {"text": row["body"][:1500]}, "phoneNumbers": [to]}).encode("utf-8"),
-                    headers={"Authorization": "Basic " + cred, "Content-Type": "application/json"})
+                    # explicit User-Agent: Cloudflare in front of api.sms-gate.app rejects
+                    # urllib's default "Python-urllib/x.y" with 403 (error code 1010)
+                    headers={"Authorization": "Basic " + cred, "Content-Type": "application/json",
+                             "User-Agent": "DengueWatch/1.0"})
                 urllib.request.urlopen(req, timeout=10).read()
                 return True, ""
             sid = os.getenv("TWILIO_SID")
